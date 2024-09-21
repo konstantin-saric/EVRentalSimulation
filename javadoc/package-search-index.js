@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"ePJ2"},{"l":"ePJ2.Clock"},{"l":"ePJ2.CompanyUtils"},{"l":"ePJ2.DataHandlers"},{"l":"ePJ2.DisplayHandlers"},{"l":"ePJ2.Parser"},{"l":"ePJ2.Rental"},{"l":"ePJ2.Vehicles"}];updateSearchResults();
