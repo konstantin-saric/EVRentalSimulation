@@ -23,11 +23,13 @@ public class Receipt {
     private String startingLocation;
     private String destLocation;
     private Integer duration;
+    private Boolean distanceWide;
     private Boolean malfunction;
     private Boolean promotion;
     private Integer driverLicense;
     private Double basePrice;
     private Double price;
+    private Integer receiptNumber;
 
     private static Integer rentalNumber = 0;
 
@@ -35,6 +37,9 @@ public class Receipt {
 
     public Receipt(Rental rental){
         Receipt.rentalNumber++;
+        receiptNumber = rentalNumber;
+
+        distanceWide = rental.isDistanceWide();
         String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
         String propPath = rootPath + "app.properties";
         Properties properties = new Properties();
@@ -79,11 +84,13 @@ public class Receipt {
                 basePrice = duration * Double.parseDouble(properties.getProperty("SCOOTER_UNIT_PRICE"));
             }
 
-            basePrice *= rental.isDistanceWide()?Double.parseDouble(properties.getProperty("DISTANCE_WIDE")):1;
+            basePrice *= distanceWide?Double.parseDouble(properties.getProperty("DISTANCE_WIDE")):1;
 
             price = basePrice - (promotion?Double.parseDouble(properties.getProperty("DISCOUNT_PROM"))*basePrice:0)
-                              - (rentalNumber%10==0?Double.parseDouble(properties.getProperty("DISCOUNT"))*basePrice:0); 
+                              - (receiptNumber%10==0?Double.parseDouble(properties.getProperty("DISCOUNT"))*basePrice:0);
         }
+
+
     }
 
     @Override
@@ -210,4 +217,19 @@ public class Receipt {
         this.dtf = dtf;
     }
 
+    public Integer getReceiptNumber() {
+        return receiptNumber;
+    }
+
+    public void setReceiptNumber(Integer receiptNumber) {
+        this.receiptNumber = receiptNumber;
+    }
+
+    public Boolean isDistanceWide() {
+        return distanceWide;
+    }
+
+    public void setDistanceWide(Boolean distanceWide) {
+        this.distanceWide = distanceWide;
+    }
 }

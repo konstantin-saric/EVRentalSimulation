@@ -1,10 +1,12 @@
 package ePJ2.DisplayHandlers;
 
+import java.awt.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import ePJ2.CompanyUtils.Company;
 import ePJ2.Rental.Rental;
 import ePJ2.Vehicles.Bicycle;
 import ePJ2.Vehicles.Car;
@@ -18,14 +20,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import java.awt.Point;
 
 /**
      *Klasa koja upravlja i konstruise JavaFX scene 
@@ -58,7 +61,6 @@ public class SceneHandler {
         
         BorderPane gridBorderPane = new BorderPane();
         GridPane gridPaneS1 = new GridPane();
-        Label coordinatesLabel = new Label("Click on a cell");
 
         for (int row = 0; row < gridHeight; row++) {
             for (int col = 0; col < gridWidth; col++) {
@@ -87,9 +89,7 @@ public class SceneHandler {
                 gridPaneS1.add(cell, col, row);
             }
         }
-
         map.setCenter(gridPaneS1);
-        map.setBottom(coordinatesLabel);
     }
 
     /**
@@ -267,5 +267,20 @@ public class SceneHandler {
         malfunctionPane.setCenter(malfunctionTable);
 
         return malfunctionPane;
+    }
+
+    public static BorderPane createStatisticsView(Company company){
+        BorderPane statisticsView = new BorderPane();
+        VBox statisticsBox = new VBox();
+
+        List<TextArea> statisticsList =  company.calculateBusinessStatistics();
+
+        for(TextArea t: statisticsList){
+            statisticsBox.getChildren().add(t);
+        }
+
+        statisticsView.setCenter(statisticsBox);
+
+        return statisticsView;
     }
 }
