@@ -3,22 +3,17 @@ package ePJ2;
 import java.io.FileInputStream;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
 
 import ePJ2.DisplayHandlers.SceneHandler;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import ePJ2.Clock.Clock;
 import ePJ2.CompanyUtils.Company;
 import ePJ2.DataHandlers.RentalDataHandler;
-import ePJ2.DisplayHandlers.MapView;
 import ePJ2.DataHandlers.VehicleDataHandler;
 import ePJ2.Vehicles.*;
 import ePJ2.Rental.Rental;
@@ -97,7 +92,7 @@ public class App extends Application{
     }
 
     void updateMalfunctionView(Stage primaryStage){
-        BorderPane malfunctionTable = SceneHandler.createMalfunctionTable(company.getRentalLists().get(clock.getDayCounter()));
+        BorderPane malfunctionTable = SceneHandler.createMalfunctionTable(company.getRentalLists().get(clock.getDayCounter()), clock.isSimFinished());
         malfunctionTable.setTop(this.malfunctionTableButtonHBox);
         malfunctionTableScene = new Scene(malfunctionTable);
         primaryStage.setTitle("Malfunction View");

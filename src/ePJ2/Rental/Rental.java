@@ -111,10 +111,14 @@ public class Rental extends Thread{
            (destLocArr[0] < 4 || destLocArr[0] > 15) || (destLocArr[1] < 4 || destLocArr[1] > 15)){
             distanceWide = true;
            }
+        else
+            distanceWide = false;
     }
 
     @Override
     public void run() {
+
+        rentedVehicle.setInUse(true);
         
         while(!finished){
             double speedX = (destLoc.x - startingLoc.x) / duration;
@@ -137,7 +141,7 @@ public class Rental extends Thread{
                     Rectangle prevCell = SceneHandler.mapArray[(int)prevLoc.x][(int)prevLoc.y];
 
                     prevCell.setFill(
-                            ((prevLoc.x < 5 || prevLoc.x > 15) || (prevLoc.y < 5 || prevLoc.y > 15))?Color.WHITE:new Color(0.38, 0.54, 0.87, 1.0)
+                            ((prevLoc.x < 5 || prevLoc.x >= 15) || (prevLoc.y < 5 || prevLoc.y >= 15))?Color.WHITE:new Color(0.38, 0.54, 0.87, 1.0)
                     );
                     currentCell.setFill(Color.RED);
 
@@ -158,7 +162,7 @@ public class Rental extends Thread{
                     e.printStackTrace();
                 }
             }
-
+            rentedVehicle.setInUse(false);
             finished = true;
             System.out.println("Thread done");
         }
@@ -168,7 +172,7 @@ public class Rental extends Thread{
             Rectangle currentCell = SceneHandler.mapArray[(int)currentLoc.x][(int)currentLoc.y];
 
             currentCell.setFill(
-                    ((currentLoc.x < 5 || currentLoc.x > 15) || (currentLoc.y < 5 || currentLoc.y > 15))?Color.WHITE:new Color(0.38, 0.54, 0.87, 1.0)
+                    ((currentLoc.x < 5 || currentLoc.x >= 15) || (currentLoc.y < 5 || currentLoc.y >= 15))?Color.WHITE:new Color(0.38, 0.54, 0.87, 1.0)
             );
 
             return null;

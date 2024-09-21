@@ -1,8 +1,7 @@
 package ePJ2.CompanyUtils;
 
-import java.awt.*;
 import java.io.*;
-import java.sql.Date;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
@@ -23,6 +22,7 @@ public class Company {
     private List<List<Rental>> rentalLists;
     private List<List<Receipt>> receiptLists;
 
+    DecimalFormat df = new DecimalFormat("#0.00");
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm");
     DateTimeFormatter dtfr = DateTimeFormatter.ofPattern("d.M.yyyy HH-mm");
     DateTimeFormatter dtfd = DateTimeFormatter.ofPattern("d.M.yyyy");
@@ -67,7 +67,7 @@ public class Company {
 
     public Boolean dateTimeComplete(Integer timeTracker){
         for(Rental r: rentalLists.get(timeTracker)){
-            if(!r.isFinished())
+            if(!r.isFinished() && !r.isSkipped())
                 return false;
         }
         return true;
@@ -132,21 +132,21 @@ public class Company {
                 summaryTotalMaintenance += Double.parseDouble(properties.getProperty("MAINTENANCE_FEE")) * r.getPrice();
                 summaryTotalExpenditure += Double.parseDouble(properties.getProperty("EXPENDITURES")) * r.getPrice();
                 summaryTotalTax += (r.getPrice() - (Double.parseDouble(properties.getProperty("MAINTENANCE_FEE")) * r.getPrice())
-                            - (k * r.getRentedVehicle().getPrice() - Double.parseDouble(properties.getProperty("EXPENDITURES")) * r.getPrice()))
+                            - (k * r.getRentedVehicle().getPrice()) - Double.parseDouble(properties.getProperty("EXPENDITURES")))
                             * Double.parseDouble(properties.getProperty("TAX"));
             }
         }
 
         String summaryStatisticsString = "------------- Summary Statistics -------------\n" +
-                                         "Total Revenue: " + summaryTotalRevenue + "\n" +
-                                         "Total Discounts: " + summaryTotalDiscounts + "\n" +
-                                         "Total Promotions: " + summaryTotalPromotions + "\n" +
-                                         "Total Wide Distance Rentals: " + summaryTotalDistanceWide + "\n" +
-                                         "Total Narrow DistanceRentals: " + summaryTotalDistanceNarrow + "\n" +
-                                         "Total Maintenance Fees: " + summaryTotalMaintenance + "\n" +
-                                         "Total Repair Fees: " + summaryTotalRepairs + "\n" +
-                                         "Total Expenditures: " + summaryTotalExpenditure + "\n" +
-                                         "Total Tax: " + summaryTotalTax + "\n" +
+                                         "Total Revenue: " + df.format(summaryTotalRevenue) + "\n" +
+                                         "Total Discounts: " + df.format(summaryTotalDiscounts) + "\n" +
+                                         "Total Promotions: " + df.format(summaryTotalPromotions) + "\n" +
+                                         "Total Wide Distance Rentals: " + df.format(summaryTotalDistanceWide) + "\n" +
+                                         "Total Narrow DistanceRentals: " + df.format(summaryTotalDistanceNarrow) + "\n" +
+                                         "Total Maintenance Fees: " + df.format(summaryTotalMaintenance) + "\n" +
+                                         "Total Repair Fees: " + df.format(summaryTotalRepairs) + "\n" +
+                                         "Total Expenditures: " + df.format(summaryTotalExpenditure) + "\n" +
+                                         "Total Tax: " + df.format(summaryTotalTax) + "\n" +
                                          "----------------------------------------------\n";
         summaryStatistics.setText(summaryStatisticsString);
         summaryStatistics.setEditable(false);
@@ -167,7 +167,7 @@ public class Company {
             day = dtfd.format(receiptLists.get(0).get(0).getDate());
 
             for (int i = 0; i < receiptLists.size(); i++) {
-                if (day.equals(dtfd.format(receiptLists.get(i).getFirst().getDate()))) {
+                if (!receiptLists.get(i).isEmpty() && day.equals(dtfd.format(receiptLists.get(i).get(0).getDate()))) {
                     for (Receipt r : receiptLists.get(i)) {
                         k = 0.0;
                         dailyTotalRevenue += r.getPrice();
@@ -189,19 +189,18 @@ public class Company {
                         }
                         dailyTotalMaintenance += Double.parseDouble(properties.getProperty("MAINTENANCE_FEE")) * r.getPrice();
                     }
-                } else {
-                    day = dtfd.format(receiptLists.get(i).getFirst().getDate());
-                    i--;
+                } else if(!receiptLists.get(i).isEmpty() && !day.equals(dtfd.format(receiptLists.get(i).get(0).getDate()))){
+
 
                     String dailyStatisticsString = "------------- " + day + " -------------\n" +
-                            "Total Revenue: " + dailyTotalRevenue + "\n" +
-                            "Total Discounts: " + dailyTotalDiscounts + "\n" +
-                            "Total Promotions: " + dailyTotalPromotions + "\n" +
-                            "Total Wide Distance Rentals: " + dailyTotalDistanceWide + "\n" +
-                            "Total Narrow DistanceRentals: " + dailyTotalDistanceNarrow + "\n" +
-                            "Total Maintenance Fees: " + dailyTotalMaintenance + "\n" +
-                            "Total Repair Fees: " + dailyTotalRepairs + "\n" +
-                            "----------------------------------------------\n";
+                                                   "Total Revenue: " + df.format(dailyTotalRevenue) + "\n" +
+                                                   "Total Discounts: " + df.format(dailyTotalDiscounts) + "\n" +
+                                                   "Total Promotions: " + df.format(dailyTotalPromotions) + "\n" +
+                                                   "Total Wide Distance Rentals: " + df.format(dailyTotalDistanceWide) + "\n" +
+                                                   "Total Narrow DistanceRentals: " + df.format(dailyTotalDistanceNarrow) + "\n" +
+                                                   "Total Maintenance Fees: " + df.format(dailyTotalMaintenance) + "\n" +
+                                                   "Total Repair Fees: " + df.format(dailyTotalRepairs) + "\n" +
+                                                   "----------------------------------------\n";
 
                     TextArea daily = new TextArea(dailyStatisticsString);
                     dailyStatistics.add(daily);
@@ -214,9 +213,27 @@ public class Company {
                     dailyTotalRepairs = 0.0;
                     dailyTotalMaintenance = 0.0;
 
+                    day = dtfd.format(receiptLists.get(i).getFirst().getDate());
+                    i--;
                 }
             }
         }
+
+        if(dailyStatistics.size() < receiptLists.size()){
+            String dailyStatisticsString = "------------- " + day + " -------------\n" +
+                                           "Total Revenue: " + df.format(dailyTotalRevenue) + "\n" +
+                                           "Total Discounts: " + df.format(dailyTotalDiscounts) + "\n" +
+                                           "Total Promotions: " + df.format(dailyTotalPromotions) + "\n" +
+                                           "Total Wide Distance Rentals: " + df.format(dailyTotalDistanceWide) + "\n" +
+                                           "Total Narrow DistanceRentals: " + df.format(dailyTotalDistanceNarrow) + "\n" +
+                                           "Total Maintenance Fees: " + df.format(dailyTotalMaintenance) + "\n" +
+                                           "Total Repair Fees: " + df.format(dailyTotalRepairs) + "\n" +
+                                           "----------------------------------------\n";
+
+            TextArea daily = new TextArea(dailyStatisticsString);
+            dailyStatistics.add(daily);
+        }
+
         for(TextArea t: dailyStatistics){
             t.setEditable(false);
             businessStatistics.add(t);

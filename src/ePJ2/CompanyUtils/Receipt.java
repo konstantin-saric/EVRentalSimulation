@@ -39,7 +39,6 @@ public class Receipt {
         Receipt.rentalNumber++;
         receiptNumber = rentalNumber;
 
-        distanceWide = rental.isDistanceWide();
         String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
         String propPath = rootPath + "app.properties";
         Properties properties = new Properties();
@@ -65,6 +64,7 @@ public class Receipt {
         this.duration = rental.getDuration();
         this.malfunction = rental.isMalfunction();
         this.promotion = rental.isPromotion();
+        distanceWide = rental.isDistanceWide();
 
         Random rando = new Random();
         driverLicense = 10000000 + rando.nextInt(90000000);

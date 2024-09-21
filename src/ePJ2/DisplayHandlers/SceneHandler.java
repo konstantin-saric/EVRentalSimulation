@@ -24,7 +24,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -36,6 +35,7 @@ import javafx.stage.Stage;
 public class SceneHandler {
 
     public static Rectangle[][] mapArray = new Rectangle[20][20];
+    public static Label dateTimeLabel = new Label();
 
     /**
      *Metoda koja mijenja scenu na proslijedjenom stage-u
@@ -45,7 +45,6 @@ public class SceneHandler {
     public static void switchScene(Stage stage, Scene scene){
         stage.setScene(scene);
         stage.show();
-        return;
     }
 
     /**
@@ -58,8 +57,7 @@ public class SceneHandler {
      *@return BorderPane u kojem se nalazi GridPane kojim je konstruisan grid
      */
     public static void createGrid(Integer gridHeight, Integer gridWidth, Integer cellSize, BorderPane map){
-        
-        BorderPane gridBorderPane = new BorderPane();
+
         GridPane gridPaneS1 = new GridPane();
 
         for (int row = 0; row < gridHeight; row++) {
@@ -71,25 +69,15 @@ public class SceneHandler {
                 else{
                     cell = new Rectangle(cellSize, cellSize, Color.WHITE);
                 }
-                cell.setStroke(Color.BLACK); // Set the border color
+                cell.setStroke(Color.BLACK);
 
                 mapArray[row][col] = cell;
-//                cell.setOnMouseClicked(e -> {
-//                    int clickedCol = GridPane.getColumnIndex(cell);
-//                    int clickedRow = GridPane.getRowIndex(cell);
-//                    List<Rental> cellRentals = new ArrayList<Rental>();
-//                    for(Rental r: rentals){
-//                        if(r.getCurrentLoc().equals(new Point(clickedCol, clickedRow))){
-//                            cellRentals.add(r);
-//                        }
-//                    };
-//                    WindowHandler.showCellInfo(cellRentals);
-//                });
 
                 gridPaneS1.add(cell, col, row);
             }
         }
         map.setCenter(gridPaneS1);
+        map.setBottom(dateTimeLabel);
     }
 
     /**
@@ -109,8 +97,6 @@ public class SceneHandler {
         TableColumn<Rental, String> currLocCol = new TableColumn<Rental, String>("Current Location");
         TableColumn<Rental, String> destLocCol = new TableColumn<Rental, String>("Destination Location");
         TableColumn<Rental, Number> durationCol = new TableColumn<Rental, Number>("Duration");
-        TableColumn<Rental, Boolean> malfunctionCol = new TableColumn<Rental, Boolean>("Malfunction");
-        TableColumn<Rental, Boolean> promotionCol = new TableColumn<Rental, Boolean>("Promotion");
 
         dateCol.setCellValueFactory(new PropertyValueFactory<Rental, LocalDateTime>("date"));
         userCol.setCellValueFactory(new PropertyValueFactory<Rental, String>("user"));
@@ -119,13 +105,11 @@ public class SceneHandler {
         currLocCol.setCellValueFactory(new PropertyValueFactory<Rental, String>("currentLocStr"));
         destLocCol.setCellValueFactory(new PropertyValueFactory<Rental, String>("destLocStr"));
         durationCol.setCellValueFactory(new PropertyValueFactory<Rental, Number>("duration"));
-        malfunctionCol.setCellValueFactory(new PropertyValueFactory<Rental, Boolean>("malfunction"));
-        promotionCol.setCellValueFactory(new PropertyValueFactory<Rental, Boolean>("promotion"));
 
         ObservableList<Rental> rentalsTableList = FXCollections.observableArrayList(rentals);
         table.setEditable(true);
         table.setItems(rentalsTableList);
-        table.getColumns().addAll(dateCol, userCol, vehicleCol, startLocCol, currLocCol, destLocCol, durationCol, malfunctionCol, promotionCol);
+        table.getColumns().addAll(dateCol, userCol, vehicleCol, startLocCol, currLocCol, destLocCol, durationCol);
         tablePane.setCenter(table);
 
         return tablePane;
@@ -240,9 +224,23 @@ public class SceneHandler {
         return tablePane;
     }
 
-    public static BorderPane createMalfunctionTable(List<Rental> rentals){
+    public static BorderPane createMalfunctionTable(List<Rental> rentals, Boolean simFinished){
         BorderPane malfunctionPane = new BorderPane();
+        TextArea malfunctionDone = new TextArea(simFinished?"Simulation done, no malfunctions to display!":"No malfunctions in current datetime!");
         TableView<Rental> malfunctionTable = new TableView<Rental>();
+
+        malfunctionDone.setEditable(false);
+
+        List<Rental> malfRentals = new ArrayList<Rental>();
+        for(Rental r: rentals){
+            if(r.isMalfunction())
+                malfRentals.add(r);
+        }
+
+        if(malfRentals.isEmpty() || simFinished){
+            malfunctionPane.setCenter(malfunctionDone);
+            return malfunctionPane;
+        }
 
         TableColumn<Rental, String> vehicleTypeCol= new TableColumn<Rental, String>();
         TableColumn<Rental, String> IDCol = new TableColumn<Rental, String>();
@@ -254,7 +252,7 @@ public class SceneHandler {
         malfunctionTimeCol.setCellValueFactory(new PropertyValueFactory<Rental, String>("date"));
         malfunctionDescCol.setCellValueFactory(new PropertyValueFactory<Rental, String>("malfunctionDesc"));
 
-        ObservableList<Rental> malfunctionsList = FXCollections.observableArrayList(rentals);
+        ObservableList<Rental> malfunctionsList = FXCollections.observableArrayList(malfRentals);
         malfunctionTable.setEditable(true);
         malfunctionTable.setItems(malfunctionsList);
         malfunctionTable.getColumns().addAll(vehicleTypeCol, IDCol, malfunctionTimeCol, malfunctionDescCol);

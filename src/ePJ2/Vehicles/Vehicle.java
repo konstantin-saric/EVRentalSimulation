@@ -9,6 +9,7 @@ public abstract class Vehicle {
     protected String model;
     protected Integer price;
     protected Integer batteryLevel;
+    protected Boolean inUse;
 
     public Vehicle(String ID, String manufacturer, String model, Integer price){
         this.ID = ID;
@@ -16,6 +17,7 @@ public abstract class Vehicle {
         this.model = model;
         this.batteryLevel = 100;
         this.price = price;
+        this.inUse = false;
     }
 
     public void discharge(){
@@ -80,5 +82,13 @@ public abstract class Vehicle {
 
     public void setBatteryLevel(Integer batteryLevel) {
         this.batteryLevel = batteryLevel;
+    }
+
+    public Boolean isInUse() {
+        return inUse;
+    }
+
+    public void setInUse(Boolean inUse) {
+        this.inUse = inUse;
     }
 }

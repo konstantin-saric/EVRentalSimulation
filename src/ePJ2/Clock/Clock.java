@@ -2,11 +2,14 @@ package ePJ2.Clock;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.concurrent.FutureTask;
 
 import ePJ2.CompanyUtils.Company;
+import ePJ2.CompanyUtils.Receipt;
 import ePJ2.DisplayHandlers.SceneHandler;
 import ePJ2.Rental.Rental;
+import ePJ2.Vehicles.Vehicle;
 import javafx.application.Platform;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -14,10 +17,12 @@ import javafx.scene.shape.Rectangle;
 public class Clock extends Thread{
     private Company company;
     private LocalDateTime currentDateTime;
+    boolean simFinished = false;
     Integer dateTimeTracker;
 
     
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm");
+    DateTimeFormatter dtfd = DateTimeFormatter.ofPattern("d.M.yyyy");
     DateTimeFormatter dtfClock = DateTimeFormatter.ofPattern("HH:mm");
 
     public Clock(Company company){
@@ -30,6 +35,28 @@ public class Clock extends Thread{
 
     @Override
     public void run() {
+
+        FutureTask<Void> clearMap = new FutureTask<Void>(() -> {
+            for(int row = 0; row < 20; row++){
+                for(int col = 0; col < 20; col++){
+                    Rectangle cell = SceneHandler.mapArray[row][col];
+                    if(row > 4 && row < 15 && col > 4 && col < 15){
+                        cell.setFill(new Color(0.38, 0.54, 0.87, 1.0));
+                    }
+                    else{
+                        cell.setFill(Color.WHITE);
+                    }
+                }
+            }
+            return null;
+        });
+
+        FutureTask<Void> updateDateTimeLabel = new FutureTask<Void>(() -> {
+            SceneHandler.dateTimeLabel.setText(dtfd.format(dtf.parse(company.getRentalLists().get(dateTimeTracker).get(0).getDate())));
+            if(simFinished)
+                SceneHandler.dateTimeLabel.setText("Sim finished!");
+            return null;
+        });
 
         while(dateTimeTracker < company.getRentalLists().size()){
 
@@ -46,7 +73,7 @@ public class Clock extends Thread{
                     for (Rental r : company.getRentalLists().get(dateTimeTracker)) {
                         boolean unique = true;
                         for (Rental t : company.getRentalLists().get(dateTimeTracker)) {
-                            if (r.getVehicleID().equals(t.getVehicleID()) && !r.equals(t)) {
+                            if ((r.getUser().equals(t.getUser()) || r.getVehicleID().equals(t.getVehicleID())) && !r.equals(t) && t.isAlive()) {
                                 unique = false;
                             }
                         }
@@ -61,6 +88,12 @@ public class Clock extends Thread{
                     threadsStarted = true;
                 }
 
+                for(Vehicle v: company.getVehicles()){
+                    if(!v.isInUse()){
+                        v.recharge();
+                    }
+                }
+
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -69,6 +102,7 @@ public class Clock extends Thread{
 
             }
 
+            company.getReceiptLists().add(new ArrayList<Receipt>());
             for(Rental r: company.getRentalLists().get(dateTimeTracker)){
                 if(!r.isSkipped()) {
                     company.getReceiptLists().get(dateTimeTracker).add(r.generateReceipt());
@@ -76,22 +110,6 @@ public class Clock extends Thread{
             }
 
             company.writeReceipts(dateTimeTracker);
-
-            FutureTask<Void> clearMap = new FutureTask<Void>(() -> {
-               for(int row = 0; row < 20; row++){
-                   for(int col = 0; col < 20; col++){
-                       Rectangle cell = SceneHandler.mapArray[row][col];
-                       if(row > 4 && row < 15 && col > 4 && col < 15){
-                           cell.setFill(new Color(0.38, 0.54, 0.87, 1.0));
-                       }
-                       else{
-                           cell.setFill(Color.WHITE);
-                       }
-                   }
-                }
-
-                return null;
-            });
 
             try {
                 Thread.sleep(5000);
@@ -102,7 +120,20 @@ public class Clock extends Thread{
             Platform.runLater(clearMap);
 
             dateTimeTracker++;
+            if(dateTimeTracker < company.getRentalLists().size() &&
+                    dtfd.format(dtf.parse(company.getRentalLists().get(dateTimeTracker).get(0).getDate())).equals(
+                    dtfd.format(dtf.parse(company.getRentalLists().get(dateTimeTracker-1).get(0).getDate())))
+                    ){
+                for(Vehicle v: company.getVehicles()){
+                    v.rechargeFull();
+                }
+            }
+
+            Platform.runLater(updateDateTimeLabel);
         }
+        dateTimeTracker--;
+        simFinished = true;
+        Platform.runLater(updateDateTimeLabel);
     }
 
     public Company getCompany() {
@@ -146,4 +177,11 @@ public class Clock extends Thread{
         this.dateTimeTracker = dateTimeTracker;
     }
 
+    public boolean isSimFinished() {
+        return simFinished;
+    }
+
+    public void setSimFinished(boolean simFinished) {
+        this.simFinished = simFinished;
+    }
 }
