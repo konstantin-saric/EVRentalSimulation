@@ -3,6 +3,8 @@ package ePJ2.Vehicles;
 import javafx.geometry.Point2D;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
+
 
 public abstract class Vehicle implements Serializable {
 
@@ -13,6 +15,8 @@ public abstract class Vehicle implements Serializable {
     protected Integer batteryLevel;
     protected Boolean inUse;
     protected Double repairPrice;
+
+    DecimalFormat df = new DecimalFormat("#0.00");
 
     public Vehicle(String ID, String manufacturer, String model, Integer price){
         this.ID = ID;
@@ -95,8 +99,8 @@ public abstract class Vehicle implements Serializable {
         this.inUse = inUse;
     }
 
-    public Double getRepairPrice() {
-        return repairPrice;
+    public String getRepairPrice() {
+        return df.format(repairPrice);
     }
 
     public void setRepairPrice(Double repairPrice) {

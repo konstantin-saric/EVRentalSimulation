@@ -150,6 +150,10 @@ public class App extends Application{
         primaryStage.setTitle("Map View");
         primaryStage.setScene(map);
         primaryStage.show();
+
+        primaryStage.setOnCloseRequest(e -> {
+            clock.setSimFinished(true);
+        });
     }
 
     

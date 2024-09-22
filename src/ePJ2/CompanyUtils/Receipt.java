@@ -28,6 +28,7 @@ public class Receipt {
     private Boolean malfunction;
     private Boolean promotion;
     private Integer driverLicense;
+    private String identification;
     private Double basePrice;
     private Double price;
     private Integer receiptNumber;
@@ -60,6 +61,8 @@ public class Receipt {
         Random rando = new Random();
         driverLicense = 10000000 + rando.nextInt(90000000);
 
+        identification = driverLicense%2==0?"ID":"Passport";
+
         if(malfunction){
             price = 0.0;
             basePrice = 0.0;
@@ -88,6 +91,7 @@ public class Receipt {
     public String toString(){
         String str = "//////////////////////////////////////////\n";
         str += "User name: " + this.user + "\n";
+        str += "Provided identification: " + this.identification + "\n";
         str += "Driver licence number: " + this.driverLicense + "\n";
         str += "Date of rental: " + dtf.format(date) + "\n";
         str += "Rented vehicle ID: " + this.vehicleID + "\n";

@@ -54,6 +54,8 @@ public class VehicleDataHandler {
                 }
                 objOut.writeObject(r.getRentedVehicle());
             }
+            objOut.close();
+            fOut.close();
         }catch (IOException e) {
             e.printStackTrace();
         }
@@ -85,7 +87,6 @@ public class VehicleDataHandler {
                     vehicles.add(scooter);
                 }
             }
-
         }catch(FileNotFoundException e) {
             e.printStackTrace();
         }catch (ClassNotFoundException e){

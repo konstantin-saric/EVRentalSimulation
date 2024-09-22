@@ -77,6 +77,10 @@ public class Clock extends Thread{
             //Loop runs until all rentals in the datetime are completed
             while(!company.dateTimeComplete(dateTimeTracker)){
 
+                if(simFinished){
+                    return;
+                }
+
                 if(!threadsStarted) {
                     for (Rental r : company.getRentalLists().get(dateTimeTracker)) {
                         boolean unique = true;

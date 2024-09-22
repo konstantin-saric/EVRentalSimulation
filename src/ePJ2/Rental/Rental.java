@@ -70,7 +70,6 @@ public class Rental extends Thread{
         destLocArr[0] = Double.parseDouble(dest[0]);
         destLocArr[1] = Double.parseDouble(dest[1]);
 
-        //this.date = date.getTime();
         user = rentalData[1];
         
         vehicleID = rentalData[2];

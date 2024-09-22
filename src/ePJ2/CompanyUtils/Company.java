@@ -22,7 +22,7 @@ public class Company {
     private List<List<Rental>> rentalLists;
     private List<List<Receipt>> receiptLists;
 
-    DecimalFormat df = new DecimalFormat("#0.00");
+
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm");
     DateTimeFormatter dtfr = DateTimeFormatter.ofPattern("d.M.yyyy HH-mm");
     DateTimeFormatter dtfd = DateTimeFormatter.ofPattern("d.M.yyyy");
@@ -82,154 +82,38 @@ public class Company {
         }
     }
 
-    public List<TextArea> calculateBusinessStatistics(){
-        TextArea summaryStatistics = new TextArea();
-        List<TextArea> dailyStatistics = new ArrayList<TextArea>();
-        List<TextArea> businessStatistics = new ArrayList<TextArea>();
+    public List<Statistic> calculateBusinessStatistics(){
 
-        Double k = 0.0;
-
-        Double summaryTotalRevenue = 0.0;
-        Double summaryTotalDiscounts = 0.0;
-        Double summaryTotalPromotions = 0.0;
-        Double summaryTotalDistanceWide = 0.0;
-        Double summaryTotalDistanceNarrow = 0.0;
-        Double summaryTotalRepairs = 0.0;
-        Double summaryTotalMaintenance = 0.0;
-        Double summaryTotalExpenditure = 0.0;
-        Double summaryTotalTax = 0.0;
-
-        for (List<Receipt> rl : this.receiptLists) {
-            for (Receipt r : rl) {
-                k = 0.0;
-                summaryTotalRevenue += r.getPrice();
-                summaryTotalPromotions += (r.isPromotion() ? Double.parseDouble(App.properties.getProperty("DISCOUNT_PROM")) * r.getBasePrice() : 0);
-                summaryTotalDiscounts += (r.getReceiptNumber() % 10 == 0 ? Double.parseDouble(App.properties.getProperty("DISCOUNT")) * r.getBasePrice() : 0);
-                if (r.isDistanceWide())
-                    summaryTotalDistanceWide += r.getBasePrice() * Double.parseDouble(App.properties.getProperty("DISTANCE_WIDE"));
-                else
-                    summaryTotalDistanceNarrow += r.getBasePrice() * Double.parseDouble(App.properties.getProperty("DISTANCE_NARROW"));
-                if (r.isMalfunction()) {
-                    if (r.getRentedVehicle() instanceof Car)
-                        k = Double.parseDouble(App.properties.getProperty("CAR_REPAIR_FEE"));
-                    else if (r.getRentedVehicle() instanceof Bicycle)
-                        k = Double.parseDouble(App.properties.getProperty("BIKE_REPAIR_FEE"));
-                    else if (r.getRentedVehicle() instanceof Scooter)
-                        k = Double.parseDouble(App.properties.getProperty("SCOOTER_REPAIR_FEE"));
-
-                        summaryTotalRepairs += k * r.getRentedVehicle().getPrice();
-                }
-                summaryTotalMaintenance += Double.parseDouble(App.properties.getProperty("MAINTENANCE_FEE")) * r.getPrice();
-                summaryTotalExpenditure += Double.parseDouble(App.properties.getProperty("EXPENDITURES")) * r.getPrice();
-                summaryTotalTax += (r.getPrice() - (Double.parseDouble(App.properties.getProperty("MAINTENANCE_FEE")) * r.getPrice())
-                            - (k * r.getRentedVehicle().getPrice()) - Double.parseDouble(App.properties.getProperty("EXPENDITURES")))
-                            * Double.parseDouble(App.properties.getProperty("TAX"));
-            }
-        }
-
-        String summaryStatisticsString = "------------- Summary Statistics -------------\n" +
-                                         "Total Revenue: " + df.format(summaryTotalRevenue) + "\n" +
-                                         "Total Discounts: " + df.format(summaryTotalDiscounts) + "\n" +
-                                         "Total Promotions: " + df.format(summaryTotalPromotions) + "\n" +
-                                         "Total Wide Distance Rentals: " + df.format(summaryTotalDistanceWide) + "\n" +
-                                         "Total Narrow DistanceRentals: " + df.format(summaryTotalDistanceNarrow) + "\n" +
-                                         "Total Maintenance Fees: " + df.format(summaryTotalMaintenance) + "\n" +
-                                         "Total Repair Fees: " + df.format(summaryTotalRepairs) + "\n" +
-                                         "Total Expenditures: " + df.format(summaryTotalExpenditure) + "\n" +
-                                         "Total Tax: " + df.format(summaryTotalTax) + "\n" +
-                                         "----------------------------------------------\n";
-        summaryStatistics.setText(summaryStatisticsString);
-        summaryStatistics.setEditable(false);
-        businessStatistics.add(summaryStatistics);
-
-
-        Double dailyTotalRevenue = 0.0;
-        Double dailyTotalDiscounts = 0.0;
-        Double dailyTotalPromotions = 0.0;
-        Double dailyTotalDistanceWide = 0.0;
-        Double dailyTotalDistanceNarrow = 0.0;
-        Double dailyTotalRepairs = 0.0;
-        Double dailyTotalMaintenance = 0.0;
-
-        String day = new String();
-
+        List<List<Receipt>> dailyReceipts = new ArrayList<List<Receipt>>();
+        dailyReceipts.add(new ArrayList<Receipt>());
+        String day;
+        int k = 0;
         if(!receiptLists.get(0).isEmpty()) {
             day = dtfd.format(receiptLists.get(0).get(0).getDate());
 
             for (int i = 0; i < receiptLists.size(); i++) {
                 if (!receiptLists.get(i).isEmpty() && day.equals(dtfd.format(receiptLists.get(i).get(0).getDate()))) {
-                    for (Receipt r : receiptLists.get(i)) {
-                        k = 0.0;
-                        dailyTotalRevenue += r.getPrice();
-                        dailyTotalPromotions += (r.isPromotion() ? Double.parseDouble(App.properties.getProperty("DISCOUNT_PROM")) * r.getBasePrice() : 0);
-                        dailyTotalDiscounts += (r.getReceiptNumber() % 10 == 0 ? Double.parseDouble(App.properties.getProperty("DISCOUNT")) * r.getBasePrice() : 0);
-                        if (r.isDistanceWide())
-                            dailyTotalDistanceWide += r.getBasePrice() * Double.parseDouble(App.properties.getProperty("DISTANCE_WIDE"));
-                        else
-                            dailyTotalDistanceNarrow += r.getBasePrice() * Double.parseDouble(App.properties.getProperty("DISTANCE_NARROW"));
-                        if (r.isMalfunction()) {
-                            if (r.getRentedVehicle() instanceof Car)
-                                k = Double.parseDouble(App.properties.getProperty("CAR_REPAIR_FEE"));
-                            else if (r.getRentedVehicle() instanceof Bicycle)
-                                k = Double.parseDouble(App.properties.getProperty("BIKE_REPAIR_FEE"));
-                            else if (r.getRentedVehicle() instanceof Scooter)
-                                k = Double.parseDouble(App.properties.getProperty("SCOOTER_REPAIR_FEE"));
-
-                            dailyTotalRepairs += k * r.getRentedVehicle().getPrice();
-                        }
-                        dailyTotalMaintenance += Double.parseDouble(App.properties.getProperty("MAINTENANCE_FEE")) * r.getPrice();
+                    for(Receipt r: receiptLists.get(i)){
+                        dailyReceipts.get(k).add(r);
                     }
                 } else if(!receiptLists.get(i).isEmpty() && !day.equals(dtfd.format(receiptLists.get(i).get(0).getDate()))){
-
-
-                    String dailyStatisticsString = "------------- " + day + " -------------\n" +
-                                                   "Total Revenue: " + df.format(dailyTotalRevenue) + "\n" +
-                                                   "Total Discounts: " + df.format(dailyTotalDiscounts) + "\n" +
-                                                   "Total Promotions: " + df.format(dailyTotalPromotions) + "\n" +
-                                                   "Total Wide Distance Rentals: " + df.format(dailyTotalDistanceWide) + "\n" +
-                                                   "Total Narrow DistanceRentals: " + df.format(dailyTotalDistanceNarrow) + "\n" +
-                                                   "Total Maintenance Fees: " + df.format(dailyTotalMaintenance) + "\n" +
-                                                   "Total Repair Fees: " + df.format(dailyTotalRepairs) + "\n" +
-                                                   "----------------------------------------\n";
-
-                    TextArea daily = new TextArea(dailyStatisticsString);
-                    dailyStatistics.add(daily);
-
-                    dailyTotalRevenue = 0.0;
-                    dailyTotalDiscounts = 0.0;
-                    dailyTotalPromotions = 0.0;
-                    dailyTotalDistanceWide = 0.0;
-                    dailyTotalDistanceNarrow = 0.0;
-                    dailyTotalRepairs = 0.0;
-                    dailyTotalMaintenance = 0.0;
-
+                    dailyReceipts.add(new ArrayList<Receipt>());
                     day = dtfd.format(receiptLists.get(i).getFirst().getDate());
                     i--;
+                    k++;
                 }
             }
         }
 
-        if(dailyStatistics.size() < receiptLists.size()){
-            String dailyStatisticsString = "------------- " + day + " -------------\n" +
-                                           "Total Revenue: " + df.format(dailyTotalRevenue) + "\n" +
-                                           "Total Discounts: " + df.format(dailyTotalDiscounts) + "\n" +
-                                           "Total Promotions: " + df.format(dailyTotalPromotions) + "\n" +
-                                           "Total Wide Distance Rentals: " + df.format(dailyTotalDistanceWide) + "\n" +
-                                           "Total Narrow DistanceRentals: " + df.format(dailyTotalDistanceNarrow) + "\n" +
-                                           "Total Maintenance Fees: " + df.format(dailyTotalMaintenance) + "\n" +
-                                           "Total Repair Fees: " + df.format(dailyTotalRepairs) + "\n" +
-                                           "----------------------------------------\n";
+        List<Statistic> statistics = new ArrayList<Statistic>();
 
-            TextArea daily = new TextArea(dailyStatisticsString);
-            dailyStatistics.add(daily);
+        statistics.add(Statistic.createSummary(receiptLists));
+
+        for(List<Receipt> rl: dailyReceipts){
+            statistics.add(Statistic.createDaily(rl));
         }
 
-        for(TextArea t: dailyStatistics){
-            t.setEditable(false);
-            businessStatistics.add(t);
-        }
-
-        return businessStatistics;
+        return statistics;
     }
 
     public List<Vehicle> getVehicles() {

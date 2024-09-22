@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ePJ2.CompanyUtils.Company;
+import ePJ2.CompanyUtils.Statistic;
 import ePJ2.Rental.Rental;
 import ePJ2.Vehicles.Bicycle;
 import ePJ2.Vehicles.Car;
@@ -78,6 +79,7 @@ public class SceneHandler {
             }
         }
         dateTimeText.setEditable(false);
+        dateTimeText.setMaxHeight(30);
         map.setCenter(gridPaneS1);
         map.setBottom(dateTimeText);
     }
@@ -270,16 +272,34 @@ public class SceneHandler {
     }
 
     public static BorderPane createStatisticsView(Company company){
+        List<Statistic> statisticsList =  company.calculateBusinessStatistics();
         BorderPane statisticsView = new BorderPane();
-        VBox statisticsBox = new VBox();
+        TableView<Statistic> statisticTable = new TableView<Statistic>();
 
-        List<TextArea> statisticsList =  company.calculateBusinessStatistics();
+        TableColumn<Statistic, String> dayCol = new TableColumn<Statistic, String>("Day");
+        TableColumn<Statistic, String> revenueCol = new TableColumn<Statistic, String>("Revenue");
+        TableColumn<Statistic, String> discountsCol = new TableColumn<Statistic, String>("Discounts");
+        TableColumn<Statistic, String> promotionsCol = new TableColumn<Statistic, String>("Promotions");
+        TableColumn<Statistic, String> distanceWideCol = new TableColumn<Statistic, String>("DistanceWide");
+        TableColumn<Statistic, String> distanceNarrowCol = new TableColumn<Statistic, String>("DistanceNarrow");
+        TableColumn<Statistic, String> repairsCol = new TableColumn<Statistic, String>("Repairs");
+        TableColumn<Statistic, String> maintenanceCol = new TableColumn<Statistic, String>("Maintenance");
+        TableColumn<Statistic, String> expenditureCol = new TableColumn<Statistic, String>("Expenditure");
 
-        for(TextArea t: statisticsList){
-            statisticsBox.getChildren().add(t);
-        }
+        dayCol.setCellValueFactory(new PropertyValueFactory<Statistic, String>("day"));
+        revenueCol.setCellValueFactory(new PropertyValueFactory<Statistic, String>("revenue"));
+        discountsCol.setCellValueFactory(new PropertyValueFactory<Statistic, String>("discounts"));
+        promotionsCol.setCellValueFactory(new PropertyValueFactory<Statistic, String>("promotions"));
+        distanceWideCol.setCellValueFactory(new PropertyValueFactory<Statistic, String>("distanceWide"));
+        distanceNarrowCol.setCellValueFactory(new PropertyValueFactory<Statistic, String>("distanceNarrow"));
+        repairsCol.setCellValueFactory(new PropertyValueFactory<Statistic, String>("repairs"));
+        maintenanceCol.setCellValueFactory(new PropertyValueFactory<Statistic, String>("maintenance"));
+        expenditureCol.setCellValueFactory(new PropertyValueFactory<Statistic, String>("expenditure"));
 
-        statisticsView.setCenter(statisticsBox);
+        ObservableList<Statistic> statisticObservableList = FXCollections.observableArrayList(statisticsList);
+        statisticTable.setItems(statisticObservableList);
+        statisticTable.getColumns().addAll(dayCol, revenueCol, discountsCol, promotionsCol, distanceWideCol, distanceNarrowCol, repairsCol, maintenanceCol, expenditureCol);
+        statisticsView.setCenter(statisticTable);
 
         return statisticsView;
     }
@@ -308,13 +328,13 @@ public class SceneHandler {
 
         TableColumn<Car, String> carIDCol = new TableColumn<Car, String>("Vehicle ID");
         TableColumn<Car, String> carModelCol = new TableColumn<Car, String>("Model");
-        TableColumn<Car, Number> carPriceCol = new TableColumn<Car, Number>("Acquisition Price");
-        TableColumn<Car, Number> carRepairPriceCol = new TableColumn<Car, Number>("Repair Cost");
+        TableColumn<Car, Double> carPriceCol = new TableColumn<Car, Double>("Acquisition Price");
+        TableColumn<Car, String> carRepairPriceCol = new TableColumn<Car, String>("Repair Cost");
 
         carIDCol.setCellValueFactory(new PropertyValueFactory<Car, String>("ID"));
         carModelCol.setCellValueFactory(new PropertyValueFactory<Car, String>("model"));
-        carPriceCol.setCellValueFactory(new PropertyValueFactory<Car, Number>("price"));
-        carRepairPriceCol.setCellValueFactory(new PropertyValueFactory<Car, Number>("repairPrice"));
+        carPriceCol.setCellValueFactory(new PropertyValueFactory<Car, Double>("price"));
+        carRepairPriceCol.setCellValueFactory(new PropertyValueFactory<Car, String>("repairPrice"));
 
 
         ObservableList<Car> carsTableList = FXCollections.observableArrayList(cars);
@@ -326,13 +346,13 @@ public class SceneHandler {
         TableColumn<Scooter, String> scooterIDCol = new TableColumn<Scooter, String>("Vehicle ID");
         TableColumn<Scooter, String> scooterModelCol = new TableColumn<Scooter, String>("Model");
         TableColumn<Scooter, Number> scooterPriceCol = new TableColumn<Scooter, Number>("Acquisition Price");
-        TableColumn<Scooter, Number> scooterRepairPriceCol = new TableColumn<Scooter, Number>("Repair Cost");
+        TableColumn<Scooter, String> scooterRepairPriceCol = new TableColumn<Scooter, String>("Repair Cost");
 
 
         scooterIDCol.setCellValueFactory(new PropertyValueFactory<Scooter, String>("ID"));
         scooterModelCol.setCellValueFactory(new PropertyValueFactory<Scooter, String>("model"));
         scooterPriceCol.setCellValueFactory(new PropertyValueFactory<Scooter, Number>("price"));
-        scooterRepairPriceCol.setCellValueFactory(new PropertyValueFactory<Scooter, Number>("repairPrice"));
+        scooterRepairPriceCol.setCellValueFactory(new PropertyValueFactory<Scooter, String>("repairPrice"));
 
         ObservableList<Scooter> scootersTableList = FXCollections.observableArrayList(scooters);
         scooterTable.setEditable(true);
@@ -342,12 +362,12 @@ public class SceneHandler {
         TableColumn<Bicycle, String> bicycleIDCol = new TableColumn<Bicycle, String>("Vehicle ID");
         TableColumn<Bicycle, String> bicycleModelCol = new TableColumn<Bicycle, String>("Model");
         TableColumn<Bicycle, Number> bicyclePriceCol = new TableColumn<Bicycle, Number>("Acquisition Price");
-        TableColumn<Bicycle, Number> bicycleRepairPriceCol = new TableColumn<Bicycle, Number>("Repair Cost");
+        TableColumn<Bicycle, String> bicycleRepairPriceCol = new TableColumn<Bicycle, String>("Repair Cost");
 
         bicycleIDCol.setCellValueFactory(new PropertyValueFactory<Bicycle, String>("ID"));
         bicycleModelCol.setCellValueFactory(new PropertyValueFactory<Bicycle, String>("model"));
         bicyclePriceCol.setCellValueFactory(new PropertyValueFactory<Bicycle, Number>("price"));
-        bicycleRepairPriceCol.setCellValueFactory(new PropertyValueFactory<Bicycle, Number>("repairPrice"));
+        bicycleRepairPriceCol.setCellValueFactory(new PropertyValueFactory<Bicycle, String>("repairPrice"));
 
         ObservableList<Bicycle> bikesTableList = FXCollections.observableArrayList(bikes);
         bicycleTable.setEditable(true);
