@@ -1,7 +1,6 @@
 package ePJ2.CompanyUtils;
 
 import ePJ2.App;
-import ePJ2.CompanyUtils.Company;
 import ePJ2.Vehicles.Bicycle;
 import ePJ2.Vehicles.Car;
 import ePJ2.Vehicles.Scooter;
@@ -10,6 +9,10 @@ import java.text.DecimalFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+/**
+ * Klasa koja prestavlja poslovne statistike
+ * Moze prestavljati i sumarne i dnevne statistike
+ */
 public class Statistic {
 
     private String day;
@@ -39,6 +42,11 @@ public class Statistic {
         tax = 0.0;
     }
 
+    /**
+     * Metoda koja kreira ukupnu statistiku poslovanja do trenutka svoje kreacije
+     * @param receiptLists Lista svih racuna koji su kreirani do trenutka pozivanja ove metode
+     * @return Ukupna statistika poslovanja
+     */
     public static Statistic createSummary(List<List<Receipt>> receiptLists) {
         Statistic summary = new Statistic();
         summary.day = "Summary";
@@ -74,6 +82,11 @@ public class Statistic {
         return summary;
     }
 
+    /**
+     * Metoda koja stvara statistiku jednog dana poslovanja
+     * @param receipts lista racuna koji su kreirani u odredjenom danu do trenutka pozivanja ove metode
+     * @return Statistika jednog dana poslovanja
+     */
     public static Statistic createDaily(List<Receipt> receipts){
         Statistic daily = new Statistic();
         if(!receipts.isEmpty()) {

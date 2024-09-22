@@ -4,9 +4,11 @@ import ePJ2.App;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
+
+/**
+ * Nasljedjuje Vehicle i predstavlja automobil
+ */
 public class Car extends Vehicle implements Serializable {
     
     private LocalDate dateOfAcquisition;
@@ -19,16 +21,6 @@ public class Car extends Vehicle implements Serializable {
         this.dateOfAcquisition = LocalDate.parse(vehicleData[3], App.dtfv);
         this.description = vehicleData[7];
         this.repairPrice = this.price * Double.parseDouble(App.properties.getProperty("CAR_REPAIR_FEE"));
-    }
-
-    
-    /** 
-     * @return String
-     */
-    @Override
-    public String toString() {
-        String string = "ID: " + this.ID + " Model: " + this.model + " Date: " + App.dtfv.format(this.dateOfAcquisition) + " Desc: " + this.description;
-        return string;
     }
 
     public String getDateOfAcquisition() {

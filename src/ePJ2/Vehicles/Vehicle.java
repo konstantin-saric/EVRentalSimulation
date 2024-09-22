@@ -1,11 +1,11 @@
 package ePJ2.Vehicles;
 
-import javafx.geometry.Point2D;
-
 import java.io.Serializable;
 import java.text.DecimalFormat;
 
-
+/**
+ * Apstraktna klasa koja predstavlja vozilo
+ */
 public abstract class Vehicle implements Serializable {
 
     protected String ID;
@@ -40,10 +40,6 @@ public abstract class Vehicle implements Serializable {
         batteryLevel = 100;
     }
 
-    
-    /** 
-     * @return String
-     */
     @Override
     public String toString() {
             String string = "ID: " + this.ID + " Model: " + this.model + " Price: " + this.price;

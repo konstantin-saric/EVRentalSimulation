@@ -1,11 +1,5 @@
 package ePJ2.DisplayHandlers;
 
-import java.awt.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 import ePJ2.CompanyUtils.Company;
 import ePJ2.CompanyUtils.Statistic;
 import ePJ2.Rental.Rental;
@@ -16,21 +10,23 @@ import ePJ2.Vehicles.Vehicle;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
-/**
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+    /**
      *Klasa koja upravlja i konstruise JavaFX scene 
      */
 public class SceneHandler {
@@ -56,7 +52,6 @@ public class SceneHandler {
      *@param gridHeight parametar koji odredjuje dimenzije grida 
      *@param gridWidth parametar koji odredjuje dimenzije grida
      *@param cellSize parametar koji odredjuje dimenzije grida
-     *@return BorderPane u kojem se nalazi GridPane kojim je konstruisan grid
      */
     public static void createGrid(Integer gridHeight, Integer gridWidth, Integer cellSize, BorderPane map){
 
@@ -85,7 +80,7 @@ public class SceneHandler {
     }
 
     /**
-     *Metoda koja stvara tabelu sa informacijama o iznajmljivanjima
+     *Metoda koja stvara tabelu sa informacijama o iznajmljivanjima na odredjenom polju na mapi
      *@param rentals lista iznajmljivanja iz kojih se stvara tabela
      *@return BorderPane u kojem se nalazi TableView tabela
      */
@@ -119,6 +114,11 @@ public class SceneHandler {
         return tablePane;
     }
 
+    /**
+     * Metoda koja stvara tabelu svih vozila
+     * @param vehicles Lista svih vozila koje kompanija posjeduje
+     * @return BorderPane koji u sebi sadrzi 3 TableView elementa u koja su poredana vozila razlicitih vrsta
+     */
     public static BorderPane createVehicleTable(List<Vehicle> vehicles){
 
         List<Car> cars = new ArrayList<Car>();
@@ -228,6 +228,12 @@ public class SceneHandler {
         return tablePane;
     }
 
+    /**
+     * Metoda koja stvara prikaz svih kvarova koji postoje u trenutnom datum-vremenu
+     * @param rentals Lista iznajmljivanja za trenutno datum-vrijeme
+     * @param simFinished Provjera zavrsetka simulacije
+     * @return Borderpane koji u sebi sadrzi ili TableView svih kvarova i informacija o njima ili TextArea u slucaju da nema kvarova ili da je simulacija gotova
+     */
     public static BorderPane createMalfunctionTable(List<Rental> rentals, Boolean simFinished){
         BorderPane malfunctionPane = new BorderPane();
         TextArea malfunctionDone = new TextArea(simFinished?"Simulation done, no malfunctions to display!":"No malfunctions in current datetime!");
@@ -246,10 +252,10 @@ public class SceneHandler {
             return malfunctionPane;
         }
 
-        TableColumn<Rental, String> vehicleTypeCol= new TableColumn<Rental, String>();
-        TableColumn<Rental, String> IDCol = new TableColumn<Rental, String>();
-        TableColumn<Rental, String> malfunctionTimeCol = new TableColumn<Rental, String>();
-        TableColumn<Rental, String> malfunctionDescCol= new TableColumn<Rental, String>();
+        TableColumn<Rental, String> vehicleTypeCol= new TableColumn<Rental, String>("Vehicle type");
+        TableColumn<Rental, String> IDCol = new TableColumn<Rental, String>("Vehicle ID");
+        TableColumn<Rental, String> malfunctionTimeCol = new TableColumn<Rental, String>("Malfunction time");
+        TableColumn<Rental, String> malfunctionDescCol= new TableColumn<Rental, String>("Malfunction description");
 
         vehicleTypeCol.setCellValueFactory(new PropertyValueFactory<Rental, String>("rentedVehicleType"));
         IDCol.setCellValueFactory(new PropertyValueFactory<Rental, String>("VehicleID"));
@@ -271,6 +277,11 @@ public class SceneHandler {
         return malfunctionPane;
     }
 
+    /**
+     * Metoda koja stvara tabelu svih poslovnih statistika kompanije do trenutnog datum-vremena
+     * @param company Kompanija u kojoj se racuna statistika poslovanja
+     * @return BorderPane koji sadrzi TableView sa sumarnim i dnevnim statistikama
+     */
     public static BorderPane createStatisticsView(Company company){
         List<Statistic> statisticsList =  company.calculateBusinessStatistics();
         BorderPane statisticsView = new BorderPane();
@@ -304,6 +315,11 @@ public class SceneHandler {
         return statisticsView;
     }
 
+    /**
+     * Metoda koja stvara tabelu svih vozila sa kvarovima i cijenama popravke
+     * @param vehicles Lista vozila sa kvarovima
+     * @return Borderpane koji sadrzi TableView u kojem se nalaze informacije o vozilima sa kvarovima
+     */
     public static BorderPane createMalfunctionVehiclesTable(List<Vehicle> vehicles){
         List<Car> cars = new ArrayList<Car>();
         List<Scooter> scooters = new ArrayList<Scooter>();

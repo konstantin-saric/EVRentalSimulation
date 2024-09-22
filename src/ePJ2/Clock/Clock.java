@@ -1,10 +1,5 @@
 package ePJ2.Clock;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.concurrent.FutureTask;
-
 import ePJ2.CompanyUtils.Company;
 import ePJ2.CompanyUtils.Receipt;
 import ePJ2.DisplayHandlers.SceneHandler;
@@ -14,6 +9,15 @@ import javafx.application.Platform;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.concurrent.FutureTask;
+
+/**
+ * Klasa koja se bavi tokom vremena, statusom citave simulacije i aktiviranjem niti iznajmljivanja
+ *
+ */
 public class Clock extends Thread{
     private Company company;
     private LocalDateTime currentDateTime;
@@ -25,6 +29,9 @@ public class Clock extends Thread{
     DateTimeFormatter dtfd = DateTimeFormatter.ofPattern("d.M.yyyy");
     DateTimeFormatter dtfClock = DateTimeFormatter.ofPattern("HH:mm");
 
+    /**
+     * @param company Kompanija prema kojoj se konstruise Clock
+     */
     public Clock(Company company){
         super();
         this.company = company;
@@ -32,6 +39,9 @@ public class Clock extends Thread{
         currentDateTime = LocalDateTime.parse(this.company.getRentalLists().getFirst().getFirst().getDate(), dtf);
     }
 
+    /**
+     * Metoda koja azurira dateTime labelu koja oznacava trenutni datum i vrijeme u kojem se simulacija izvodi
+     */
     public void updateDateTimeLabel(){
         String dateTime = dtf.format(currentDateTime);
         SceneHandler.dateTimeText.setText(dateTime);
@@ -70,7 +80,6 @@ public class Clock extends Thread{
             boolean threadsStarted = false;
 
             currentDateTime = LocalDateTime.parse(this.company.getRentalLists().get(dateTimeTracker).getFirst().getDate(), dtf);
-            System.out.println(dtf.format(currentDateTime));
 
             updateDateTimeLabel();
 

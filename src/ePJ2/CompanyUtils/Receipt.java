@@ -1,13 +1,5 @@
 package ePJ2.CompanyUtils;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.Random;
-import java.util.Properties;
-import java.io.FileInputStream;
-import java.io.IOException;
-
 import ePJ2.App;
 import ePJ2.Rental.Rental;
 import ePJ2.Vehicles.Bicycle;
@@ -15,7 +7,16 @@ import ePJ2.Vehicles.Car;
 import ePJ2.Vehicles.Scooter;
 import ePJ2.Vehicles.Vehicle;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Random;
 
+/**
+ * Klasa koja predstavlja racun
+ * Generise se pri zavrsetku nekog iznajmljivanja
+ * Podaci iz nje se koriste za statistike i upisuju u fajlove
+ */
 public class Receipt {
     private LocalDateTime date;
     private String user;
@@ -37,6 +38,9 @@ public class Receipt {
 
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm");
 
+    /**
+     * @param rental Iznajmljivanje prema kojem se konstruise racun
+     */
     public Receipt(Rental rental){
         Receipt.rentalNumber++;
         receiptNumber = rentalNumber;
@@ -87,6 +91,9 @@ public class Receipt {
 
     }
 
+    /**
+     * ToString metoda se koristi pri ispisu racuna
+     */
     @Override
     public String toString(){
         String str = "//////////////////////////////////////////\n";
@@ -97,6 +104,7 @@ public class Receipt {
         str += "Rented vehicle ID: " + this.vehicleID + "\n";
         str += "Starting location: " + this.startingLocation + "\n";
         str += "Destination location: " + this.destLocation + "\n";
+        str += "Discount active? " + (this.receiptNumber%10==0?"Yes":"No") + "\n";
         str += "Promotion active?  " + (this.promotion?"Yes":"No") + "\n";
         str += "Vehicle malfunction? " + (this.malfunction?"Yes":"No") + "\n";
         str += "Subtotal: " + this.basePrice + "\n";

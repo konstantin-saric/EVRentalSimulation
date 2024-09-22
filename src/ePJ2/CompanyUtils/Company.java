@@ -1,22 +1,23 @@
 package ePJ2.CompanyUtils;
 
-import java.io.*;
-import java.text.DecimalFormat;
-import java.util.List;
-import java.util.ArrayList;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Properties;
-
 import ePJ2.App;
 import ePJ2.Rental.Rental;
-import ePJ2.Vehicles.Bicycle;
-import ePJ2.Vehicles.Car;
-import ePJ2.Vehicles.Scooter;
 import ePJ2.Vehicles.Vehicle;
 
-import javafx.scene.control.TextArea;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * Klasa koja predstavlja kompaniju
+ * Drzi u sebi informacije o vozilima, iznajmljivanjima i racunima
+ * Racuna statistike, pise racune i prati status iznajmljivanja za odredjeno datum-vrijeme
+ */
 public class Company {
     private List<Vehicle> vehicles;
     private List<List<Rental>> rentalLists;
@@ -27,6 +28,10 @@ public class Company {
     DateTimeFormatter dtfr = DateTimeFormatter.ofPattern("d.M.yyyy HH-mm");
     DateTimeFormatter dtfd = DateTimeFormatter.ofPattern("d.M.yyyy");
 
+    /**
+     * @param vehicles Lista vozila koje kompanija posjeduje
+     * @param rentals Lista iznajmljivanja koje kompanija prima
+     */
     public Company(List<Vehicle> vehicles, List<Rental> rentals){
 
         this.vehicles = vehicles;
@@ -54,7 +59,10 @@ public class Company {
         }
     }
 
-
+    /**
+     * Metoda koja provjerava da status iznajmljivanja za odredjeni datum-vrijeme
+     * @param timeTracker broj koji oznacava trenutno datum-vrijeme
+     */
     public Boolean dateTimeComplete(Integer timeTracker){
         for(Rental r: rentalLists.get(timeTracker)){
             if(!r.isFinished() && !r.isSkipped())
@@ -63,6 +71,10 @@ public class Company {
         return true;
     }
 
+    /**
+     * Metoda koja ispisuje u fajlove sve racune za odredjeni datum-vrijeme
+     * @param dateTimeTracker broj koji oznacava trenutno datum-vrijeme
+     */
     public void writeReceipts(Integer dateTimeTracker) {
         for(Receipt r : this.receiptLists.get(dateTimeTracker)){
             String path = new String(App.RECEIPT_PATH + "\\" + dtfr.format(r.getDate()));
@@ -82,6 +94,10 @@ public class Company {
         }
     }
 
+    /**
+     * Metoda koja racuna statistiku poslovanja
+     * @return Lista statistika koja ukljucuje ukupnu statistiku cijelog vremena poslovanja i statistiku odvojenu po datumu
+     */
     public List<Statistic> calculateBusinessStatistics(){
 
         List<List<Receipt>> dailyReceipts = new ArrayList<List<Receipt>>();

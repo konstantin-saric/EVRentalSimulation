@@ -1,26 +1,28 @@
 package ePJ2;
 
-import java.io.FileInputStream;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Properties;
-
+import ePJ2.Clock.Clock;
+import ePJ2.CompanyUtils.Company;
+import ePJ2.DataHandlers.RentalDataHandler;
+import ePJ2.DataHandlers.VehicleDataHandler;
 import ePJ2.DisplayHandlers.SceneHandler;
+import ePJ2.Rental.Rental;
+import ePJ2.Rental.RentalComparator;
+import ePJ2.Vehicles.Vehicle;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import ePJ2.Clock.Clock;
-import ePJ2.CompanyUtils.Company;
-import ePJ2.DataHandlers.RentalDataHandler;
-import ePJ2.DataHandlers.VehicleDataHandler;
-import ePJ2.Vehicles.*;
-import ePJ2.Rental.Rental;
-import ePJ2.Rental.RentalComparator;
- 
 
+import java.io.FileInputStream;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Properties;
+
+/**
+ * Glavna klasa aplikacije
+ */
 public class App extends Application{
 
     private static final int GRID_SIZE = 20; // Number of cells in each row/column
@@ -51,6 +53,10 @@ public class App extends Application{
     public static String DATA_PATH;
     public static Properties properties = new Properties();
 
+    /**Metoda koja postavlja logiku za dugmad, tj. na koju scenu prebacuju, kako trebaju osvjeziti informacije u njoj
+     * i raspored dugmadi na druge scene
+     * @param primaryStage stage na kojem se mijenjaju scene
+     */
     void setButtonLogic(Stage primaryStage){
         mapViewButton.setOnAction(e -> {
             mapButtonHBox.getChildren().clear();
@@ -88,6 +94,10 @@ public class App extends Application{
         });
     }
 
+    /**
+     * Metoda za azuriranje informacija u tabeli sa vozilima
+     * @param primaryStage stage na kojem se mijenja title
+     */
     void updateVehicleView(Stage primaryStage){
         BorderPane vehicleTable = SceneHandler.createVehicleTable(vehicles);
         vehicleTable.setTop(vehicleTableButtonHBox);
@@ -95,6 +105,10 @@ public class App extends Application{
         primaryStage.setTitle("Vehicle View");
     }
 
+    /**
+     * Metoda za azuriranje informacija u prikazu kvarova
+     * @param primaryStage stage na kojem se mijenja title
+     */
     void updateMalfunctionView(Stage primaryStage){
         BorderPane malfunctionTable = SceneHandler.createMalfunctionTable(company.getRentalLists().get(clock.getDayCounter()), clock.isSimFinished());
         malfunctionTable.setTop(this.malfunctionTableButtonHBox);
@@ -102,6 +116,10 @@ public class App extends Application{
         primaryStage.setTitle("Malfunction View");
     }
 
+    /**
+     * Metoda za azuriranje informacija u tabeli sa statistikama
+     * @param primaryStage stage na kojem se mijenja title
+     */
     void updateStatisticsView(Stage primaryStage){
         BorderPane statisticsView = SceneHandler.createStatisticsView(company);
         statisticsView.setTop(this.statisticsButtonHBox);
@@ -109,6 +127,10 @@ public class App extends Application{
         primaryStage.setTitle("Statistics View");
     }
 
+    /**
+     * Metoda za azuriranje informacija u tabeli sa vozilima koja imaju kvarove
+     * @param primaryStage stage na kojem se mijenja title
+     */
     void updateVehicleMalfunctionView(Stage primaryStage){
         BorderPane vehicleMalfunctionView = SceneHandler.createMalfunctionVehiclesTable(VehicleDataHandler.deserializeMalfunctions());
         vehicleMalfunctionView.setTop(vehicleMalfunctionsButtonHBox);

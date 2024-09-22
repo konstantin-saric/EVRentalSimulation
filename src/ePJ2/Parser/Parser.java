@@ -1,12 +1,16 @@
 package ePJ2.Parser;
 
-import java.util.List;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * Klasa koja parsira informacije iz CSV fajla na odredjenoj putanji i smijesta ih u listu
+ * podataka tipa String[] gdje svaki niz String-ova predstavlja jedan red iz fajla
+ */
 public class Parser{
     
     /**

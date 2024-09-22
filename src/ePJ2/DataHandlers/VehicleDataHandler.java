@@ -1,15 +1,22 @@
 package ePJ2.DataHandlers;
 
+import ePJ2.App;
+import ePJ2.Parser.Parser;
+import ePJ2.Rental.Rental;
+import ePJ2.Vehicles.Bicycle;
+import ePJ2.Vehicles.Car;
+import ePJ2.Vehicles.Scooter;
+import ePJ2.Vehicles.Vehicle;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import ePJ2.App;
-import ePJ2.CompanyUtils.Receipt;
-import ePJ2.Parser.Parser;
-import ePJ2.Rental.Rental;
-import ePJ2.Vehicles.*;
-
+/**
+ * Klasa koja bavi podacima vezanim za vozila
+ * Stvara listu svih vozila koje kompanija posjeduje
+ * Serijalizuje i deserijalizuje sva vozila sa kvarovima
+ */
 public class VehicleDataHandler {
 
     /**
@@ -22,23 +29,49 @@ public class VehicleDataHandler {
         List<Vehicle> vehicles = new ArrayList<Vehicle>();
 
         for(int i = 0; i < vehicleData.size(); i++){
+            boolean unique = true;
             if(vehicleData.get(i)[8].equals("bicikl")){
-                vehicles.add(new Bicycle(vehicleData.get(i)));
+                Bicycle bike = new Bicycle(vehicleData.get(i));
+                for(Vehicle v: vehicles)
+                    if(v instanceof Bicycle && v.getID().equals(bike.getID())) {
+                        unique = false;
+                        break;
+                    }
+                if(unique)
+                    vehicles.add(bike);
             }
             else if(vehicleData.get(i)[8].equals("automobil")){
-                vehicles.add(new Car(vehicleData.get(i)));
+                Car car = new Car(vehicleData.get(i));
+                for(Vehicle v: vehicles)
+                    if(v instanceof Car && v.getID().equals(car.getID())) {
+                        unique = false;
+                        break;
+                    }
+                if(unique)
+                    vehicles.add(car);
             }
             else if(vehicleData.get(i)[8].equals("trotinet")){
-                vehicles.add(new Scooter(vehicleData.get(i)));
+                Scooter scooter = new Scooter(vehicleData.get(i));
+                for(Vehicle v: vehicles)
+                    if(v instanceof Scooter && v.getID().equals(scooter.getID())) {
+                        unique = false;
+                        break;
+                    }
+                if(unique)
+                    vehicles.add(scooter);
             }
             else{
-             continue;   
+             continue;
             }
         }
 
         return vehicles;
     }
 
+    /**
+     * Metoda koja serijalizuje sva vozila koja imaju kvar
+     * @param rentals Lista svih iznajmljivanja
+     */
     public static void serializeMalfunctions(List<Rental> rentals){
 
         String path = new String(App.VEHICLE_PATH);
@@ -61,6 +94,10 @@ public class VehicleDataHandler {
         }
     }
 
+    /**
+     * Metoda koja deserijalizuje sva vozila sa kvarom
+     * @return Lista vozila sa kvarom
+     */
     public static List<Vehicle> deserializeMalfunctions(){
         String path = new String(App.VEHICLE_PATH);
         File fileDir = new File(path);

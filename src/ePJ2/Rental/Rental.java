@@ -1,10 +1,6 @@
 package ePJ2.Rental;
 
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-
 import ePJ2.CompanyUtils.Receipt;
 import ePJ2.DisplayHandlers.SceneHandler;
 import ePJ2.DisplayHandlers.WindowHandler;
@@ -12,13 +8,14 @@ import ePJ2.Vehicles.Car;
 import ePJ2.Vehicles.Scooter;
 import ePJ2.Vehicles.Vehicle;
 import javafx.application.Platform;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import java.awt.geom.Point2D;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.concurrent.FutureTask;
 
 
@@ -49,7 +46,12 @@ public class Rental extends Thread{
     private BorderPane map;
 
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm");
-    
+
+    /**
+     * @param rentalData Podaci o iznajmljivanju proslijedjeni is Parsera
+     * @param vehicles Spisak svih vozila koja kompanija posjeduje
+     * @param map Mapa na kojoj se iznajmljivanje nalazi
+     */
     public Rental(String[] rentalData, List<Vehicle> vehicles, BorderPane map){
         
         date = LocalDateTime.parse(rentalData[0], dtf);
@@ -136,8 +138,8 @@ public class Rental extends Thread{
                 rentedVehicle.discharge();
 
                 FutureTask<Void> updateTask = new FutureTask<Void>(() -> {
-                    Rectangle currentCell = SceneHandler.mapArray[(int)currentLoc.x][(int)currentLoc.y];
-                    Rectangle prevCell = SceneHandler.mapArray[(int)prevLoc.x][(int)prevLoc.y];
+                    Rectangle currentCell = SceneHandler.mapArray[(int)currentLoc.y][(int)currentLoc.x];
+                    Rectangle prevCell = SceneHandler.mapArray[(int)prevLoc.y][(int)prevLoc.x];
 
                     prevCell.setFill(
                             ((prevLoc.x < 5 || prevLoc.x >= 15) || (prevLoc.y < 5 || prevLoc.y >= 15))?Color.WHITE:new Color(0.38, 0.54, 0.87, 1.0)
@@ -163,12 +165,11 @@ public class Rental extends Thread{
             }
             rentedVehicle.setInUse(false);
             finished = true;
-            System.out.println("Thread done");
         }
 
         FutureTask<Void> clearCell = new FutureTask<Void>(() -> {
 
-            Rectangle currentCell = SceneHandler.mapArray[(int)currentLoc.x][(int)currentLoc.y];
+            Rectangle currentCell = SceneHandler.mapArray[(int)currentLoc.y][(int)currentLoc.x];
 
             currentCell.setFill(
                     ((currentLoc.x < 5 || currentLoc.x >= 15) || (currentLoc.y < 5 || currentLoc.y >= 15))?Color.WHITE:new Color(0.38, 0.54, 0.87, 1.0)
@@ -181,49 +182,25 @@ public class Rental extends Thread{
 
     }
 
+    /**
+     * @return Racun koji je generisan po zavrsetku iznajmljivanja
+     */
     public Receipt generateReceipt(){
         return new Receipt(this);
     }
 
-    
-    /** 
-     * @return String
-     */
     public String getDate(){
         return dtf.format(date);
     }
 
-    
-    /** 
-     * @return String
-     */
-    @Override
-    public String toString() {
-        
-        String string = new String("User:" + this.user + " Start:" + this.startingLoc + " Dest:" + this.destLoc + " Malf:" + this.malfunction + " Date:" + dtf.format(date));
-        return string;
-    }
-
-    
-    /** 
-     * @param date
-     */
     public void setDate(LocalDateTime date) {
         this.date = date;
     }
 
-    
-    /** 
-     * @return String
-     */
     public String getUser() {
         return this.user;
     }
 
-    
-    /** 
-     * @param user
-     */
     public void setUser(String user) {
         this.user = user;
     }

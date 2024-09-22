@@ -1,12 +1,12 @@
 package ePJ2.DisplayHandlers;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import ePJ2.Rental.Rental;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
      *Klasa koja upravlja i konstruise JavaFX stage-ove 
