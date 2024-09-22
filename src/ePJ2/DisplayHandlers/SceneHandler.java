@@ -35,7 +35,8 @@ import javafx.stage.Stage;
 public class SceneHandler {
 
     public static Rectangle[][] mapArray = new Rectangle[20][20];
-    public static Label dateTimeLabel = new Label();
+    public static TextArea dateTimeText = new TextArea("Test");
+
 
     /**
      *Metoda koja mijenja scenu na proslijedjenom stage-u
@@ -76,8 +77,9 @@ public class SceneHandler {
                 gridPaneS1.add(cell, col, row);
             }
         }
+        dateTimeText.setEditable(false);
         map.setCenter(gridPaneS1);
-        map.setBottom(dateTimeLabel);
+        map.setBottom(dateTimeText);
     }
 
     /**
@@ -281,4 +283,94 @@ public class SceneHandler {
 
         return statisticsView;
     }
+
+    public static BorderPane createMalfunctionVehiclesTable(List<Vehicle> vehicles){
+        List<Car> cars = new ArrayList<Car>();
+        List<Scooter> scooters = new ArrayList<Scooter>();
+        List<Bicycle> bikes = new ArrayList<Bicycle>();
+
+        for(Vehicle v: vehicles){
+            if(v instanceof Car){
+                cars.add((Car)v);
+            }
+            if(v instanceof Scooter){
+                scooters.add((Scooter)v);
+            }
+            if(v instanceof Bicycle){
+                bikes.add((Bicycle)v);
+            }
+        }
+
+        BorderPane tableBox = new BorderPane();
+        TableView<Car> carTable = new TableView<Car>();
+        TableView<Scooter> scooterTable = new TableView<Scooter>();
+        TableView<Bicycle> bicycleTable = new TableView<Bicycle>();
+
+        TableColumn<Car, String> carIDCol = new TableColumn<Car, String>("Vehicle ID");
+        TableColumn<Car, String> carModelCol = new TableColumn<Car, String>("Model");
+        TableColumn<Car, Number> carPriceCol = new TableColumn<Car, Number>("Acquisition Price");
+        TableColumn<Car, Number> carRepairPriceCol = new TableColumn<Car, Number>("Repair Cost");
+
+        carIDCol.setCellValueFactory(new PropertyValueFactory<Car, String>("ID"));
+        carModelCol.setCellValueFactory(new PropertyValueFactory<Car, String>("model"));
+        carPriceCol.setCellValueFactory(new PropertyValueFactory<Car, Number>("price"));
+        carRepairPriceCol.setCellValueFactory(new PropertyValueFactory<Car, Number>("repairPrice"));
+
+
+        ObservableList<Car> carsTableList = FXCollections.observableArrayList(cars);
+        carTable.setEditable(true);
+        carTable.setItems(carsTableList);
+        carTable.getColumns().addAll(carIDCol, carModelCol, carPriceCol, carRepairPriceCol);
+
+
+        TableColumn<Scooter, String> scooterIDCol = new TableColumn<Scooter, String>("Vehicle ID");
+        TableColumn<Scooter, String> scooterModelCol = new TableColumn<Scooter, String>("Model");
+        TableColumn<Scooter, Number> scooterPriceCol = new TableColumn<Scooter, Number>("Acquisition Price");
+        TableColumn<Scooter, Number> scooterRepairPriceCol = new TableColumn<Scooter, Number>("Repair Cost");
+
+
+        scooterIDCol.setCellValueFactory(new PropertyValueFactory<Scooter, String>("ID"));
+        scooterModelCol.setCellValueFactory(new PropertyValueFactory<Scooter, String>("model"));
+        scooterPriceCol.setCellValueFactory(new PropertyValueFactory<Scooter, Number>("price"));
+        scooterRepairPriceCol.setCellValueFactory(new PropertyValueFactory<Scooter, Number>("repairPrice"));
+
+        ObservableList<Scooter> scootersTableList = FXCollections.observableArrayList(scooters);
+        scooterTable.setEditable(true);
+        scooterTable.setItems(scootersTableList);
+        scooterTable.getColumns().addAll(scooterIDCol, scooterModelCol, scooterPriceCol, scooterRepairPriceCol);
+
+        TableColumn<Bicycle, String> bicycleIDCol = new TableColumn<Bicycle, String>("Vehicle ID");
+        TableColumn<Bicycle, String> bicycleModelCol = new TableColumn<Bicycle, String>("Model");
+        TableColumn<Bicycle, Number> bicyclePriceCol = new TableColumn<Bicycle, Number>("Acquisition Price");
+        TableColumn<Bicycle, Number> bicycleRepairPriceCol = new TableColumn<Bicycle, Number>("Repair Cost");
+
+        bicycleIDCol.setCellValueFactory(new PropertyValueFactory<Bicycle, String>("ID"));
+        bicycleModelCol.setCellValueFactory(new PropertyValueFactory<Bicycle, String>("model"));
+        bicyclePriceCol.setCellValueFactory(new PropertyValueFactory<Bicycle, Number>("price"));
+        bicycleRepairPriceCol.setCellValueFactory(new PropertyValueFactory<Bicycle, Number>("repairPrice"));
+
+        ObservableList<Bicycle> bikesTableList = FXCollections.observableArrayList(bikes);
+        bicycleTable.setEditable(true);
+        bicycleTable.setItems(bikesTableList);
+        bicycleTable.getColumns().addAll(bicycleIDCol, bicycleModelCol, bicyclePriceCol, bicycleRepairPriceCol);
+
+        carTable.setFixedCellSize(25);
+        scooterTable.setFixedCellSize(25);
+        bicycleTable.setFixedCellSize(25);
+
+        tableBox.setLeft(carTable);
+        tableBox.setRight(scooterTable);
+        tableBox.setCenter(bicycleTable);
+
+        BorderPane tablePane = new BorderPane();
+        tablePane.setCenter(tableBox);
+
+        tablePane.setMaxHeight(750);
+        tablePane.setMinWidth(800);
+
+        return tablePane;
+    }
 }
+
+
+

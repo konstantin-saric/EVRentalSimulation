@@ -1,6 +1,7 @@
 package ePJ2;
 
 import java.io.FileInputStream;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Properties;
 
@@ -35,52 +36,55 @@ public class App extends Application{
     private HBox vehicleTableButtonHBox = new HBox();
     private HBox malfunctionTableButtonHBox = new HBox();
     private HBox statisticsButtonHBox = new HBox();
-    private Scene map, vehiclesTableScene, malfunctionTableScene, businessStatisticsScene;
+    private HBox vehicleMalfunctionsButtonHBox = new HBox();
+    private Scene map, vehiclesTableScene, malfunctionTableScene, businessStatisticsScene, vehicleMalfunctionsScene;
     private Button mapViewButton = new Button("Return to Map View");
     private Button vehicleTableButton = new Button("Switch to Vehicle Table");
     private Button malfunctionTableButton = new Button("Switch to Malfunction View");
     private Button statisticsButton = new Button("Switch to Business Statistics Overview");
+    private Button vehicleMalfunctionsButton = new Button("Switch to Vehicle Malfunctions Overview");
 
-
+    public static DateTimeFormatter dtfv = DateTimeFormatter.ofPattern("d.M.yyyy.");
 
     public static String RECEIPT_PATH;
+    public static String VEHICLE_PATH;
     public static String DATA_PATH;
+    public static Properties properties = new Properties();
 
     void setButtonLogic(Stage primaryStage){
         mapViewButton.setOnAction(e -> {
-            if(mapButtonHBox.getChildren().size() < 3) {
-                mapButtonHBox.getChildren().clear();
-                mapButtonHBox.getChildren().addAll(vehicleTableButton, malfunctionTableButton, statisticsButton);
-            }
+            mapButtonHBox.getChildren().clear();
+            mapButtonHBox.getChildren().addAll(vehicleTableButton, malfunctionTableButton, statisticsButton, vehicleMalfunctionsButton);
             SceneHandler.switchScene(primaryStage, map);
         });
 
         vehicleTableButton.setOnAction(e -> {
-            if(vehicleTableButtonHBox.getChildren().size() < 3) {
-                vehicleTableButtonHBox.getChildren().clear();
-                vehicleTableButtonHBox.getChildren().addAll(mapViewButton, malfunctionTableButton, statisticsButton);
-            }
+            vehicleTableButtonHBox.getChildren().clear();
+            vehicleTableButtonHBox.getChildren().addAll(mapViewButton, malfunctionTableButton, statisticsButton, vehicleMalfunctionsButton);
             updateVehicleView(primaryStage);
             SceneHandler.switchScene(primaryStage, vehiclesTableScene);
         });
 
 
         malfunctionTableButton.setOnAction(e -> {
-            if(malfunctionTableButtonHBox.getChildren().size() < 3) {
-                malfunctionTableButtonHBox.getChildren().clear();
-                malfunctionTableButtonHBox.getChildren().addAll(mapViewButton, vehicleTableButton, statisticsButton);
-            }
+            malfunctionTableButtonHBox.getChildren().clear();
+            malfunctionTableButtonHBox.getChildren().addAll(mapViewButton, vehicleTableButton, statisticsButton, vehicleMalfunctionsButton);
             updateMalfunctionView(primaryStage);
             SceneHandler.switchScene(primaryStage, malfunctionTableScene);
         });
 
         statisticsButton.setOnAction(e -> {
-            if(statisticsButtonHBox.getChildren().size() < 3) {
-                statisticsButtonHBox.getChildren().clear();
-                statisticsButtonHBox.getChildren().addAll(mapViewButton, vehicleTableButton, malfunctionTableButton);
-            }
+            statisticsButtonHBox.getChildren().clear();
+            statisticsButtonHBox.getChildren().addAll(mapViewButton, vehicleTableButton, malfunctionTableButton, vehicleMalfunctionsButton);
             updateStatisticsView(primaryStage);
             SceneHandler.switchScene(primaryStage, businessStatisticsScene);
+        });
+
+        vehicleMalfunctionsButton.setOnAction(e -> {
+            vehicleMalfunctionsButtonHBox.getChildren().clear();
+            vehicleMalfunctionsButtonHBox.getChildren().addAll(mapViewButton, vehicleTableButton, malfunctionTableButton, statisticsButton);
+            updateVehicleMalfunctionView(primaryStage);
+            SceneHandler.switchScene(primaryStage, vehicleMalfunctionsScene);
         });
     }
 
@@ -105,6 +109,12 @@ public class App extends Application{
         primaryStage.setTitle("Statistics View");
     }
 
+    void updateVehicleMalfunctionView(Stage primaryStage){
+        BorderPane vehicleMalfunctionView = SceneHandler.createMalfunctionVehiclesTable(VehicleDataHandler.deserializeMalfunctions());
+        vehicleMalfunctionView.setTop(vehicleMalfunctionsButtonHBox);
+        vehicleMalfunctionsScene = new Scene(vehicleMalfunctionView);
+        primaryStage.setTitle("Vehicle Malfunctions Overview");
+    }
     
     /** 
      * @param primaryStage
@@ -114,11 +124,11 @@ public class App extends Application{
     public void start(Stage primaryStage) throws Exception{
         String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
         String propPath = rootPath + "app.properties";
-        Properties appProperties = new Properties();
-        appProperties.load(new FileInputStream(propPath));
+        properties.load(new FileInputStream(propPath));
 
-        App.RECEIPT_PATH = appProperties.getProperty("receiptsPath");
-        App.DATA_PATH = appProperties.getProperty("dataPath");
+        App.RECEIPT_PATH = properties.getProperty("receiptsPath");
+        App.VEHICLE_PATH = properties.getProperty("vehiclesPath");
+        App.DATA_PATH = properties.getProperty("dataPath");
 
         setButtonLogic(primaryStage);
 
@@ -126,15 +136,17 @@ public class App extends Application{
         completeRentalList = RentalDataHandler.fetchRentals(DATA_PATH + "Rentals.csv", vehicles, gridBorderPane);
         completeRentalList.sort(new RentalComparator());
 
+        VehicleDataHandler.serializeMalfunctions(completeRentalList);
+
         company = new Company(vehicles, completeRentalList);
         clock = new Clock(company);
 
         clock.start();
 
         SceneHandler.createGrid(20, 20, 30, gridBorderPane);
-        mapButtonHBox.getChildren().addAll(vehicleTableButton, malfunctionTableButton,statisticsButton);
+        mapButtonHBox.getChildren().addAll(vehicleTableButton, malfunctionTableButton,statisticsButton, vehicleMalfunctionsButton);
         gridBorderPane.setTop(mapButtonHBox);
-        map = new Scene(gridBorderPane, GRID_SIZE * (CELL_SIZE + 3), GRID_SIZE * (CELL_SIZE + 4));
+        map = new Scene(gridBorderPane);
         primaryStage.setTitle("Map View");
         primaryStage.setScene(map);
         primaryStage.show();

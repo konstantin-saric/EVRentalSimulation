@@ -8,6 +8,7 @@ import java.util.Properties;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import ePJ2.App;
 import ePJ2.Rental.Rental;
 import ePJ2.Vehicles.Bicycle;
 import ePJ2.Vehicles.Car;
@@ -39,16 +40,6 @@ public class Receipt {
         Receipt.rentalNumber++;
         receiptNumber = rentalNumber;
 
-        String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
-        String propPath = rootPath + "app.properties";
-        Properties properties = new Properties();
-        try{
-            properties.load(new FileInputStream(propPath));
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
-
         try{
             this.date = LocalDateTime.parse(rental.getDate(), dtf);
         }
@@ -75,19 +66,19 @@ public class Receipt {
         }
         else{
             if(rentedVehicle instanceof Car){
-                basePrice = duration * Double.parseDouble(properties.getProperty("CAR_UNIT_PRICE"));
+                basePrice = duration * Double.parseDouble(App.properties.getProperty("CAR_UNIT_PRICE"));
             }
             else if(rentedVehicle instanceof Bicycle){
-                basePrice = duration * Double.parseDouble(properties.getProperty("BIKE_UNIT_PRICE"));
+                basePrice = duration * Double.parseDouble(App.properties.getProperty("BIKE_UNIT_PRICE"));
             }
             else if(rentedVehicle instanceof Scooter){
-                basePrice = duration * Double.parseDouble(properties.getProperty("SCOOTER_UNIT_PRICE"));
+                basePrice = duration * Double.parseDouble(App.properties.getProperty("SCOOTER_UNIT_PRICE"));
             }
 
-            basePrice *= distanceWide?Double.parseDouble(properties.getProperty("DISTANCE_WIDE")):1;
+            basePrice *= distanceWide?Double.parseDouble(App.properties.getProperty("DISTANCE_WIDE")):1;
 
-            price = basePrice - (promotion?Double.parseDouble(properties.getProperty("DISCOUNT_PROM"))*basePrice:0)
-                              - (receiptNumber%10==0?Double.parseDouble(properties.getProperty("DISCOUNT"))*basePrice:0);
+            price = basePrice - (promotion?Double.parseDouble(App.properties.getProperty("DISCOUNT_PROM"))*basePrice:0)
+                              - (receiptNumber%10==0?Double.parseDouble(App.properties.getProperty("DISCOUNT"))*basePrice:0);
         }
 
 

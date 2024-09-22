@@ -32,6 +32,13 @@ public class Clock extends Thread{
         currentDateTime = LocalDateTime.parse(this.company.getRentalLists().getFirst().getFirst().getDate(), dtf);
     }
 
+    public void updateDateTimeLabel(){
+        String dateTime = dtf.format(currentDateTime);
+        SceneHandler.dateTimeText.setText(dateTime);
+        if(simFinished)
+            SceneHandler.dateTimeText.setText("Sim finished!");
+    }
+
 
     @Override
     public void run() {
@@ -48,15 +55,15 @@ public class Clock extends Thread{
                     }
                 }
             }
+
+            String dateTime = dtf.format(currentDateTime);
+            SceneHandler.dateTimeText.setText(dateTime);
+            if(simFinished)
+                SceneHandler.dateTimeText.setText("Sim finished!");
+
             return null;
         });
 
-        FutureTask<Void> updateDateTimeLabel = new FutureTask<Void>(() -> {
-            SceneHandler.dateTimeLabel.setText(dtfd.format(dtf.parse(company.getRentalLists().get(dateTimeTracker).get(0).getDate())));
-            if(simFinished)
-                SceneHandler.dateTimeLabel.setText("Sim finished!");
-            return null;
-        });
 
         while(dateTimeTracker < company.getRentalLists().size()){
 
@@ -65,6 +72,7 @@ public class Clock extends Thread{
             currentDateTime = LocalDateTime.parse(this.company.getRentalLists().get(dateTimeTracker).getFirst().getDate(), dtf);
             System.out.println(dtf.format(currentDateTime));
 
+            updateDateTimeLabel();
 
             //Loop runs until all rentals in the datetime are completed
             while(!company.dateTimeComplete(dateTimeTracker)){
@@ -129,11 +137,10 @@ public class Clock extends Thread{
                 }
             }
 
-            Platform.runLater(updateDateTimeLabel);
         }
         dateTimeTracker--;
         simFinished = true;
-        Platform.runLater(updateDateTimeLabel);
+        updateDateTimeLabel();
     }
 
     public Company getCompany() {

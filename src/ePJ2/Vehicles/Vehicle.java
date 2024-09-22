@@ -2,7 +2,9 @@ package ePJ2.Vehicles;
 
 import javafx.geometry.Point2D;
 
-public abstract class Vehicle {
+import java.io.Serializable;
+
+public abstract class Vehicle implements Serializable {
 
     protected String ID;
     protected String manufacturer;
@@ -10,6 +12,7 @@ public abstract class Vehicle {
     protected Integer price;
     protected Integer batteryLevel;
     protected Boolean inUse;
+    protected Double repairPrice;
 
     public Vehicle(String ID, String manufacturer, String model, Integer price){
         this.ID = ID;
@@ -90,5 +93,13 @@ public abstract class Vehicle {
 
     public void setInUse(Boolean inUse) {
         this.inUse = inUse;
+    }
+
+    public Double getRepairPrice() {
+        return repairPrice;
+    }
+
+    public void setRepairPrice(Double repairPrice) {
+        this.repairPrice = repairPrice;
     }
 }

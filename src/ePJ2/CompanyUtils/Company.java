@@ -26,18 +26,8 @@ public class Company {
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm");
     DateTimeFormatter dtfr = DateTimeFormatter.ofPattern("d.M.yyyy HH-mm");
     DateTimeFormatter dtfd = DateTimeFormatter.ofPattern("d.M.yyyy");
-    Properties properties = new Properties();
 
     public Company(List<Vehicle> vehicles, List<Rental> rentals){
-
-        String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
-        String propPath = rootPath + "app.properties";
-        try{
-            properties.load(new FileInputStream(propPath));
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
 
         this.vehicles = vehicles;
 
@@ -113,27 +103,27 @@ public class Company {
             for (Receipt r : rl) {
                 k = 0.0;
                 summaryTotalRevenue += r.getPrice();
-                summaryTotalPromotions += (r.isPromotion() ? Double.parseDouble(properties.getProperty("DISCOUNT_PROM")) * r.getBasePrice() : 0);
-                summaryTotalDiscounts += (r.getReceiptNumber() % 10 == 0 ? Double.parseDouble(properties.getProperty("DISCOUNT")) * r.getBasePrice() : 0);
+                summaryTotalPromotions += (r.isPromotion() ? Double.parseDouble(App.properties.getProperty("DISCOUNT_PROM")) * r.getBasePrice() : 0);
+                summaryTotalDiscounts += (r.getReceiptNumber() % 10 == 0 ? Double.parseDouble(App.properties.getProperty("DISCOUNT")) * r.getBasePrice() : 0);
                 if (r.isDistanceWide())
-                    summaryTotalDistanceWide += r.getBasePrice() * Double.parseDouble(properties.getProperty("DISTANCE_WIDE"));
+                    summaryTotalDistanceWide += r.getBasePrice() * Double.parseDouble(App.properties.getProperty("DISTANCE_WIDE"));
                 else
-                    summaryTotalDistanceNarrow += r.getBasePrice() * Double.parseDouble(properties.getProperty("DISTANCE_NARROW"));
+                    summaryTotalDistanceNarrow += r.getBasePrice() * Double.parseDouble(App.properties.getProperty("DISTANCE_NARROW"));
                 if (r.isMalfunction()) {
                     if (r.getRentedVehicle() instanceof Car)
-                        k = Double.parseDouble(properties.getProperty("CAR_REPAIR_FEE"));
+                        k = Double.parseDouble(App.properties.getProperty("CAR_REPAIR_FEE"));
                     else if (r.getRentedVehicle() instanceof Bicycle)
-                        k = Double.parseDouble(properties.getProperty("BIKE_REPAIR_FEE"));
+                        k = Double.parseDouble(App.properties.getProperty("BIKE_REPAIR_FEE"));
                     else if (r.getRentedVehicle() instanceof Scooter)
-                        k = Double.parseDouble(properties.getProperty("SCOOTER_REPAIR_FEE"));
+                        k = Double.parseDouble(App.properties.getProperty("SCOOTER_REPAIR_FEE"));
 
                         summaryTotalRepairs += k * r.getRentedVehicle().getPrice();
                 }
-                summaryTotalMaintenance += Double.parseDouble(properties.getProperty("MAINTENANCE_FEE")) * r.getPrice();
-                summaryTotalExpenditure += Double.parseDouble(properties.getProperty("EXPENDITURES")) * r.getPrice();
-                summaryTotalTax += (r.getPrice() - (Double.parseDouble(properties.getProperty("MAINTENANCE_FEE")) * r.getPrice())
-                            - (k * r.getRentedVehicle().getPrice()) - Double.parseDouble(properties.getProperty("EXPENDITURES")))
-                            * Double.parseDouble(properties.getProperty("TAX"));
+                summaryTotalMaintenance += Double.parseDouble(App.properties.getProperty("MAINTENANCE_FEE")) * r.getPrice();
+                summaryTotalExpenditure += Double.parseDouble(App.properties.getProperty("EXPENDITURES")) * r.getPrice();
+                summaryTotalTax += (r.getPrice() - (Double.parseDouble(App.properties.getProperty("MAINTENANCE_FEE")) * r.getPrice())
+                            - (k * r.getRentedVehicle().getPrice()) - Double.parseDouble(App.properties.getProperty("EXPENDITURES")))
+                            * Double.parseDouble(App.properties.getProperty("TAX"));
             }
         }
 
@@ -171,23 +161,23 @@ public class Company {
                     for (Receipt r : receiptLists.get(i)) {
                         k = 0.0;
                         dailyTotalRevenue += r.getPrice();
-                        dailyTotalPromotions += (r.isPromotion() ? Double.parseDouble(properties.getProperty("DISCOUNT_PROM")) * r.getBasePrice() : 0);
-                        dailyTotalDiscounts += (r.getReceiptNumber() % 10 == 0 ? Double.parseDouble(properties.getProperty("DISCOUNT")) * r.getBasePrice() : 0);
+                        dailyTotalPromotions += (r.isPromotion() ? Double.parseDouble(App.properties.getProperty("DISCOUNT_PROM")) * r.getBasePrice() : 0);
+                        dailyTotalDiscounts += (r.getReceiptNumber() % 10 == 0 ? Double.parseDouble(App.properties.getProperty("DISCOUNT")) * r.getBasePrice() : 0);
                         if (r.isDistanceWide())
-                            dailyTotalDistanceWide += r.getBasePrice() * Double.parseDouble(properties.getProperty("DISTANCE_WIDE"));
+                            dailyTotalDistanceWide += r.getBasePrice() * Double.parseDouble(App.properties.getProperty("DISTANCE_WIDE"));
                         else
-                            dailyTotalDistanceNarrow += r.getBasePrice() * Double.parseDouble(properties.getProperty("DISTANCE_NARROW"));
+                            dailyTotalDistanceNarrow += r.getBasePrice() * Double.parseDouble(App.properties.getProperty("DISTANCE_NARROW"));
                         if (r.isMalfunction()) {
                             if (r.getRentedVehicle() instanceof Car)
-                                k = Double.parseDouble(properties.getProperty("CAR_REPAIR_FEE"));
+                                k = Double.parseDouble(App.properties.getProperty("CAR_REPAIR_FEE"));
                             else if (r.getRentedVehicle() instanceof Bicycle)
-                                k = Double.parseDouble(properties.getProperty("BIKE_REPAIR_FEE"));
+                                k = Double.parseDouble(App.properties.getProperty("BIKE_REPAIR_FEE"));
                             else if (r.getRentedVehicle() instanceof Scooter)
-                                k = Double.parseDouble(properties.getProperty("SCOOTER_REPAIR_FEE"));
+                                k = Double.parseDouble(App.properties.getProperty("SCOOTER_REPAIR_FEE"));
 
                             dailyTotalRepairs += k * r.getRentedVehicle().getPrice();
                         }
-                        dailyTotalMaintenance += Double.parseDouble(properties.getProperty("MAINTENANCE_FEE")) * r.getPrice();
+                        dailyTotalMaintenance += Double.parseDouble(App.properties.getProperty("MAINTENANCE_FEE")) * r.getPrice();
                     }
                 } else if(!receiptLists.get(i).isEmpty() && !day.equals(dtfd.format(receiptLists.get(i).get(0).getDate()))){
 

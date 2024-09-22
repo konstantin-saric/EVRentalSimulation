@@ -15,7 +15,7 @@ public class WindowHandler {
     
     /**
      *Metoda koja prikazuje informacije o iznajmljenim vozilima u odredjenom polju grida
-     *@param cellRentals lista podataka o iznajmljivanjima u polju grida
+     *@param cellRental lista podataka o iznajmljivanjima u polju grida
      */
     public static void showCellInfo(Rental cellRental){
         Stage cellInfoWindow = new Stage();
