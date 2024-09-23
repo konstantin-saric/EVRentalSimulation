@@ -76,19 +76,23 @@ public class VehicleDataHandler {
 
         String path = new String(App.VEHICLE_PATH);
         File fileDir = new File(path);
-        String filename = new String("malfunctions.data");
-        File file = new File(fileDir, filename);
+        int k = 1;
         try {
-            FileOutputStream fOut = new FileOutputStream(file);
-            ObjectOutputStream objOut = new ObjectOutputStream(fOut);
             for(Rental r: rentals){
-                if (!fileDir.isDirectory()) {
-                    fileDir.mkdir();
+                String filename = new String("malfunction" + k + ".data");
+                if(r.isMalfunction()){
+                    File file = new File(fileDir, filename);
+                    FileOutputStream fOut = new FileOutputStream(file);
+                    ObjectOutputStream objOut = new ObjectOutputStream(fOut);
+                    if (!fileDir.isDirectory()) {
+                        fileDir.mkdir();
+                    }
+                    objOut.writeObject(r.getRentedVehicle());
+                    k++;
+                    objOut.close();
+                    fOut.close();
                 }
-                objOut.writeObject(r.getRentedVehicle());
             }
-            objOut.close();
-            fOut.close();
         }catch (IOException e) {
             e.printStackTrace();
         }
@@ -101,35 +105,33 @@ public class VehicleDataHandler {
     public static List<Vehicle> deserializeMalfunctions(){
         String path = new String(App.VEHICLE_PATH);
         File fileDir = new File(path);
-        String filename = new String("malfunctions.data");
-        File file = new File(fileDir, filename);
+        int k = 1;
+        String filename = new String("malfunction" + k + ".data");
 
         List<Vehicle> vehicles = new ArrayList<Vehicle>();
         try {
-            FileInputStream fIn = new FileInputStream(file);
-            ObjectInputStream objIn = new ObjectInputStream(fIn);
-
-            for(int i = 0 ; ; i++){
+            while(new File(fileDir, filename).exists()){
+                filename = new String("malfunction" + k + ".data");
+                File file = new File(fileDir, filename);
+                FileInputStream fIn = new FileInputStream(file);
+                ObjectInputStream objIn = new ObjectInputStream(fIn);
                 Object obj = objIn.readObject();
-                if(obj instanceof Car) {
+                if (obj instanceof Car) {
                     Car car = (Car) obj;
                     vehicles.add(car);
-                }
-                else if(obj instanceof Bicycle) {
+                } else if (obj instanceof Bicycle) {
                     Bicycle bike = (Bicycle) obj;
                     vehicles.add(bike);
-                }
-                else if(obj instanceof Scooter) {
+                } else if (obj instanceof Scooter) {
                     Scooter scooter = (Scooter) obj;
                     vehicles.add(scooter);
                 }
+                k++;
             }
         }catch(FileNotFoundException e) {
             e.printStackTrace();
         }catch (ClassNotFoundException e){
             e.printStackTrace();
-        }catch (EOFException e) {
-            return vehicles;
         }catch (IOException e) {
             e.printStackTrace();
         }

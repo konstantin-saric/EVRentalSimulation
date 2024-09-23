@@ -82,7 +82,7 @@ public class Receipt {
                 basePrice = duration * Double.parseDouble(App.properties.getProperty("SCOOTER_UNIT_PRICE"));
             }
 
-            basePrice *= distanceWide?Double.parseDouble(App.properties.getProperty("DISTANCE_WIDE")):1;
+            basePrice *= distanceWide?Double.parseDouble(App.properties.getProperty("DISTANCE_WIDE")):Double.parseDouble(App.properties.getProperty("DISTANCE_NARROW"));
 
             price = basePrice - (promotion?Double.parseDouble(App.properties.getProperty("DISCOUNT_PROM"))*basePrice:0)
                               - (receiptNumber%10==0?Double.parseDouble(App.properties.getProperty("DISCOUNT"))*basePrice:0);
